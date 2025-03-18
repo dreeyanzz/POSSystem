@@ -162,6 +162,7 @@ void AddItemPage(void)
                         }
                         printf("\n");
                     }
+                    printf("\n");
 
                     printf("Are you sure you want to register this item? Please review before proceeding.\n");
                     printf("Press [y] for yes, [n] for no.\n");

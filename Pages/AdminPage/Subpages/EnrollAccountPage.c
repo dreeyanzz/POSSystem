@@ -161,8 +161,9 @@ void EnrollAccountPage(void)
                     clearTerminal();
 
                     printf("Enroll Account Page\n");
-                    printf("%s\n", getFormattedCurrentDateTime());
-                    printf("Press [esc] to go back.\n\n");
+                    printf("Current Datetime: %s\n", getFormattedCurrentDateTime());
+                    printf("Press [esc] to go back.\n");
+                    printf("\n");
 
                     for (int i = 0; i < numberOfFields; i++)
                     {
@@ -213,6 +214,7 @@ void EnrollAccountPage(void)
                         }
                         printf("\n");
                     }
+                    printf("\n");
 
                     printf("Are you sure you want to enroll this account? Please review before proceeding.\n");
                     printf("Press [y] for yes, [n] for no.\n");
