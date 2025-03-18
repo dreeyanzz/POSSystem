@@ -5,6 +5,7 @@
         "removeitempage.h": "c",
         "stdio.h": "c",
         "tools.h": "c",
-        "fieldtype.h": "c"
+        "fieldtype.h": "c",
+        "enrollaccountpage.h": "c"
     }
 }
