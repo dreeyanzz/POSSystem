@@ -136,15 +136,17 @@ void EnrollAccountPage(void)
             printf("\n");
         }
 
+        ansi_colorize_start((ANSI_SGR[]){ANSI_BOLD, ANSI_BG_RED}, 2);
         printf("\n");
         if (username[0] == '\0')
-            printf("%s\n", ansi_colorize("Username cannot be empty.", (ANSI_SGR[]){ANSI_BOLD, ANSI_BG_RED}, 2));
+            printf("Username cannot be empty.\n");
         if (hasExisted)
-            printf("%s\n", ansi_colorize("This username already exists. Please use another username.", (ANSI_SGR[]){ANSI_BOLD, ANSI_BG_RED}, 2));
+            printf("This username already exists. Please use another username.\n");
         if (password[0] == '\0')
-            printf("%s\n", ansi_colorize("Password cannot be empty.", (ANSI_SGR[]){ANSI_BOLD, ANSI_BG_RED}, 2));
+            printf("Password cannot be empty.\n");
         if (displayName[0] == '\0')
-            printf("%s\n", ansi_colorize("Display name cannot be empty.", (ANSI_SGR[]){ANSI_BOLD, ANSI_BG_RED}, 2));
+            printf("Display name cannot be empty.\n");
+        ansi_colorize_end();
 
         KeyboardKey key = getKeyPress();
         char c = mappedAlNum(key);

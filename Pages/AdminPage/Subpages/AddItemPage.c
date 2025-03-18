@@ -17,10 +17,13 @@ void AddItemPage(void)
         return;
     }
 
-    char *itemName = "\0";
-    char *identifier = "\0";
+    char *itemName = (char *)malloc(sizeof(char));
+    char *identifier = (char *)malloc(sizeof(char));
     long price = 0;
     bool hasExisted = false;
+
+    itemName[0] = '\0';
+    identifier[0] = '\0';
 
     size_t numberOfFields = 3;
     Field fields[] = {
@@ -104,13 +107,15 @@ void AddItemPage(void)
             printf("\n");
         }
 
+        ansi_colorize_start((ANSI_SGR[]){ANSI_BOLD, ANSI_BG_RED}, 2);
         printf("\n");
         if (hasExisted)
-            printf("%s\n", ansi_colorize("This identifer already exists. Please use another identifier.", (ANSI_SGR[]){ANSI_BOLD, ANSI_BG_RED}, 2));
+            printf("This identifer already exists. Please use another identifier.\n");
         if (itemName[0] == '\0')
-            printf("%s\n", ansi_colorize("Item name cannot be empty.", (ANSI_SGR[]){ANSI_BOLD, ANSI_BG_RED}, 2));
+            printf("Item name cannot be empty.\n");
         if (identifier[0] == '\0')
-            printf("%s\n", ansi_colorize("Item identifer cannot be empty.", (ANSI_SGR[]){ANSI_BOLD, ANSI_BG_RED}, 2));
+            printf("Item identifer cannot be empty.\n");
+        ansi_colorize_end();
 
         KeyboardKey key = getKeyPress();
         char c = mappedAlNum(key);
