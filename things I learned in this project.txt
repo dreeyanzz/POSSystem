@@ -1,0 +1,14 @@
+extern
+modularize
+unions
+file tokenizing
+more understanding sa pointers
+arrow notation
+fopen() and fclose()
+fprintf()
+snprintf()
+srand()
+folder creating, _mkdir()
+size_t
+printf("%*s", width, string) '*' is like the width part and then 's' is the string
+strdup()
