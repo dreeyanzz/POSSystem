@@ -77,7 +77,7 @@ void AddItemToDatabase(const char *itemName, const char *identifier, const long 
 
 void removeItemsDatabaseEntryByIdentifier(const char *identifier)
 {
-    char *tempItemsDatabaseName = "temp.csv";
+    const char *tempItemsDatabaseName = "temp.csv";
 
     size_t allocatedSize = strlen(databasesPath) + 1 /* slash */ + strlen(tempItemsDatabaseName) + 1 /* null terminator */;
     char *newItemsDatabasePath = malloc(allocatedSize);
@@ -106,4 +106,28 @@ void removeItemsDatabaseEntryByIdentifier(const char *identifier)
 
     remove(itemsDatabasePath);
     rename(newItemsDatabasePath, itemsDatabasePath);
+}
+
+int countEntries(FILE *db)
+{
+
+    int numEntries = 0;
+
+    char buffer[1024];
+    rewind(db);                        // put back the pointer to the top
+    fgets(buffer, sizeof(buffer), db); // Skip header
+    while (fgets(buffer, sizeof(buffer), db))
+    {
+        char *line = buffer;
+        if (*line == '\0' || *line == '\n')
+        {
+            continue;
+        }
+
+        numEntries++;
+    }
+
+    rewind(db); // put the pointer again to the top
+
+    return numEntries;
 }
