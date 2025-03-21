@@ -29,7 +29,6 @@ void RemoveItemPage(void)
     ItemsDatabaseEntry *itemsDBEntries = (ItemsDatabaseEntry *)malloc(sizeof(ItemsDatabaseEntry));
     ItemsDatabaseEntry *itemsToShow = (ItemsDatabaseEntry *)malloc(sizeof(ItemsDatabaseEntry));
 
-    int cursor = 0;
     int selectedEntryIndex = 0;
     const int maxEntriesToShow = 5;
 
@@ -44,6 +43,7 @@ void RemoveItemPage(void)
         clearTerminal();
 
         printHeader();
+        printf("\n");
 
         int numEntries = countEntries(itemsDB);
         int numItemsToShow = (numEntries >= maxEntriesToShow ? maxEntriesToShow : numEntries);
@@ -61,9 +61,6 @@ void RemoveItemPage(void)
             toShowStartIndex--;
             toShowEndIndex--;
         }
-
-        printf("itemsDB entries Count: %d\n", countEntries(itemsDB));
-        printf("selectedEntryIndex = %d\n", selectedEntryIndex);
 
         char buffer[1024];
         rewind(itemsDB);
@@ -86,9 +83,16 @@ void RemoveItemPage(void)
 
         for (int i = toShowStartIndex; i < toShowEndIndex; i++)
         {
-            i == selectedEntryIndex ? printColoredCursor() : printf("  ");
 
             const ItemsDatabaseEntry currentEntry = itemsDBEntries[i];
+
+            if (i == selectedEntryIndex)
+            {
+                printColoredCursor();
+                ansi_colorize_start((ANSI_SGR[]){ANSI_BG_WHITE, ANSI_FG_BLACK, ANSI_BOLD}, 3);
+            }
+            else
+                printf("  ");
 
             printf("|");
             printCentered(currentEntry.itemName, columnWidth);
@@ -98,13 +102,103 @@ void RemoveItemPage(void)
             printCentered(inttoascii(currentEntry.itemPrice), columnWidth);
             printf("|");
 
+            ansi_colorize_end();
+
             printf("\n");
         }
+        printf("\n");
 
         KeyboardKey key = getKeyPressInsensitive();
         if (key == KEY_ENTER)
         {
-            break;
+            while (true)
+            {
+
+                clearTerminal();
+
+                printHeader();
+                printf("\n");
+
+                int numEntries = countEntries(itemsDB);
+                int numItemsToShow = (numEntries >= maxEntriesToShow ? maxEntriesToShow : numEntries);
+                itemsDBEntries = realloc(itemsDBEntries, numEntries * sizeof(ItemsDatabaseEntry));
+                itemsToShow = realloc(itemsToShow, numItemsToShow * sizeof(ItemsDatabaseEntry));
+                int toShowEndIndex = (toShowStartIndex + numItemsToShow);
+
+                if (selectedEntryIndex >= toShowEndIndex)
+                {
+                    toShowEndIndex++;
+                    toShowStartIndex++;
+                }
+                if (selectedEntryIndex < toShowStartIndex)
+                {
+                    toShowStartIndex--;
+                    toShowEndIndex--;
+                }
+
+                char buffer[1024];
+                rewind(itemsDB);
+                fgets(buffer, sizeof(buffer), itemsDB);
+                int index = 0;
+                while (fgets(buffer, sizeof(buffer), itemsDB))
+                {
+                    char *dbItemName = strtok(buffer, "|");
+                    char *dbItemIdentifier = strtok(NULL, "|");
+                    char *dbItemPrice = strtok(NULL, "|");
+
+                    itemsDBEntries[index] = (ItemsDatabaseEntry){
+                        .itemName = strdup(dbItemName),
+                        .itemIdentifier = strdup(dbItemIdentifier),
+                        .itemPrice = atoi(dbItemPrice),
+                    };
+
+                    index++;
+                }
+
+                for (int i = toShowStartIndex; i < toShowEndIndex; i++)
+                {
+
+                    const ItemsDatabaseEntry currentEntry = itemsDBEntries[i];
+
+                    if (i == selectedEntryIndex)
+                    {
+                        printColoredCursor();
+                        ansi_colorize_start((ANSI_SGR[]){ANSI_BG_WHITE, ANSI_FG_BLACK, ANSI_BOLD}, 3);
+                    }
+                    else
+                        printf("  ");
+
+                    printf("|");
+                    printCentered(currentEntry.itemName, columnWidth);
+                    printf("|");
+                    printCentered(currentEntry.itemIdentifier, columnWidth);
+                    printf("|");
+                    printCentered(inttoascii(currentEntry.itemPrice), columnWidth);
+                    printf("|");
+
+                    ansi_colorize_end();
+
+                    printf("\n");
+                }
+                printf("\n");
+
+                printf("Are you sure you want to remove this item? Please review before proceeding.\n");
+                printf("Press [y] for yes, [n] for no.\n");
+
+                KeyboardKey key2 = getKeyPressInsensitive();
+
+                if (key2 == KEY_y)
+                {
+                    fclose(itemsDB);
+                    removeItemsDatabaseEntryByIdentifier(strdup(itemsDBEntries[selectedEntryIndex].itemIdentifier));
+                    itemsDB = fopen(itemsDatabasePath, "a+");
+                    break;
+                }
+                else if (key2 == KEY_n)
+                    break;
+
+                refreshDelay();
+            }
         }
         if (key == KEY_ESCAPE)
         {
