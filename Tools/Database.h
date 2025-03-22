@@ -9,6 +9,28 @@ extern char itemsDatabasePath[256];
 extern const char *accountsDatabaseName;
 extern const char *itemsDatabaseName;
 
+typedef enum
+{
+    user,
+    admin,
+} AccountType;
+
+typedef struct
+{
+    char *itemName;
+    char *itemIdentifier;
+    int itemPrice;
+} ItemsDatabaseEntry;
+
+typedef struct
+{
+    char *username;
+    char *password;
+    char *displayName;
+    AccountType accountType;
+    char *identifier;
+} AccountsDatabaseEntry;
+
 void initializeDatabases();
 
 void InitializeAccountsDatabase();

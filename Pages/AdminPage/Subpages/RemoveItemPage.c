@@ -9,13 +9,6 @@
 #include "../../../Tools/FieldType.h"
 #include "../../../Tools/Database.h"
 
-typedef struct
-{
-    char *itemName;
-    char *itemIdentifier;
-    int itemPrice;
-} ItemsDatabaseEntry;
-
 void printHeader();
 
 const int columnWidth = 30;
@@ -27,7 +20,6 @@ void RemoveItemPage(void)
     FILE *itemsDB = fopen(itemsDatabasePath, "a+");
 
     ItemsDatabaseEntry *itemsDBEntries = (ItemsDatabaseEntry *)malloc(sizeof(ItemsDatabaseEntry));
-    ItemsDatabaseEntry *itemsToShow = (ItemsDatabaseEntry *)malloc(sizeof(ItemsDatabaseEntry));
 
     int selectedEntryIndex = 0;
     const int maxEntriesToShow = 5;
@@ -48,7 +40,6 @@ void RemoveItemPage(void)
         int numEntries = countEntries(itemsDB);
         int numItemsToShow = (numEntries >= maxEntriesToShow ? maxEntriesToShow : numEntries);
         itemsDBEntries = realloc(itemsDBEntries, numEntries * sizeof(ItemsDatabaseEntry));
-        itemsToShow = realloc(itemsToShow, numItemsToShow * sizeof(ItemsDatabaseEntry));
         int toShowEndIndex = (toShowStartIndex + numItemsToShow);
 
         if (selectedEntryIndex >= toShowEndIndex)
@@ -122,7 +113,6 @@ void RemoveItemPage(void)
                 int numEntries = countEntries(itemsDB);
                 int numItemsToShow = (numEntries >= maxEntriesToShow ? maxEntriesToShow : numEntries);
                 itemsDBEntries = realloc(itemsDBEntries, numEntries * sizeof(ItemsDatabaseEntry));
-                itemsToShow = realloc(itemsToShow, numItemsToShow * sizeof(ItemsDatabaseEntry));
                 int toShowEndIndex = (toShowStartIndex + numItemsToShow);
 
                 if (selectedEntryIndex >= toShowEndIndex)

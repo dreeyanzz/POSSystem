@@ -106,6 +106,8 @@ void removeItemsDatabaseEntryByIdentifier(const char *identifier)
 
     remove(itemsDatabasePath);
     rename(newItemsDatabasePath, itemsDatabasePath);
+
+    free(newItemsDatabasePath);
 }
 
 int countEntries(FILE *db)
