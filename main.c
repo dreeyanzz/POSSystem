@@ -22,7 +22,7 @@
 typedef enum
 {
     ADMIN,
-    USER
+    USER,
 } Status;
 
 typedef struct

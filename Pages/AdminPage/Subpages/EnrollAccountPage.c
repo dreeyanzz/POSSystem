@@ -79,6 +79,8 @@ void EnrollAccountPage(void)
         fgets(buffer, sizeof(buffer), accountsDatabase);        // Skip header
         while (fgets(buffer, sizeof(buffer), accountsDatabase)) //  Scan every line of accounts.csv
         {
+            buffer[strcspn(buffer, "\n")] = '\0';
+
             char *dbUsername = strtok(buffer, "|");
             if (dbUsername && strcmp(username, dbUsername) == 0)
             {
@@ -135,9 +137,9 @@ void EnrollAccountPage(void)
                 printf("%s", ansi_colorize(" ", (ANSI_SGR[]){ANSI_BG_WHITE}, 1));
             printf("\n");
         }
+        printf("\n");
 
         ansi_colorize_start((ANSI_SGR[]){ANSI_BOLD, ANSI_BG_RED}, 2);
-        printf("\n");
         if (username[0] == '\0')
             printf("Username cannot be empty.\n");
         if (hasExisted)
@@ -167,7 +169,7 @@ void EnrollAccountPage(void)
 
                     for (int i = 0; i < numberOfFields; i++)
                     {
-                        printf("%s", coloredCusor());
+                        printColoredCursor();
 
                         switch (fields[i].type)
                         {
@@ -190,20 +192,15 @@ void EnrollAccountPage(void)
                         {
 
                             if (fields[i].data.passwordField.showPassword)
-                            {
                                 printf("%s: %s", fields[i].data.passwordField.displayName, *fields[i].data.passwordField.var);
-                            }
                             else
                             {
-
                                 size_t stringLength = strlen(*fields[i].data.passwordField.var);
 
                                 printf("%s: ", fields[i].data.passwordField.displayName);
 
                                 for (size_t i = 0; i < stringLength; i++)
-                                {
                                     printf("*");
-                                }
                             }
 
                             break;
@@ -239,9 +236,7 @@ void EnrollAccountPage(void)
             }
         }
         else if (key == KEY_ESCAPE)
-        {
             break;
-        }
 
         switch (key)
         {

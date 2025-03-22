@@ -22,7 +22,7 @@ void RemoveItemPage(void)
     ItemsDatabaseEntry *itemsDBEntries = (ItemsDatabaseEntry *)malloc(sizeof(ItemsDatabaseEntry));
 
     int selectedEntryIndex = 0;
-    const int maxEntriesToShow = 5;
+    const int maxEntriesToShow = 4;
 
     int numEntries = countEntries(itemsDB);
     int numItemsToShow = (numEntries >= maxEntriesToShow ? maxEntriesToShow : numEntries);
@@ -59,6 +59,8 @@ void RemoveItemPage(void)
         int index = 0;
         while (fgets(buffer, sizeof(buffer), itemsDB))
         {
+            buffer[strcspn(buffer, "\n")] = '\0';
+
             char *dbItemName = strtok(buffer, "|");
             char *dbItemIdentifier = strtok(NULL, "|");
             char *dbItemPrice = strtok(NULL, "|");
@@ -110,41 +112,6 @@ void RemoveItemPage(void)
                 printHeader();
                 printf("\n");
 
-                int numEntries = countEntries(itemsDB);
-                int numItemsToShow = (numEntries >= maxEntriesToShow ? maxEntriesToShow : numEntries);
-                itemsDBEntries = realloc(itemsDBEntries, numEntries * sizeof(ItemsDatabaseEntry));
-                int toShowEndIndex = (toShowStartIndex + numItemsToShow);
-
-                if (selectedEntryIndex >= toShowEndIndex)
-                {
-                    toShowEndIndex++;
-                    toShowStartIndex++;
-                }
-                if (selectedEntryIndex < toShowStartIndex)
-                {
-                    toShowStartIndex--;
-                    toShowEndIndex--;
-                }
-
-                char buffer[1024];
-                rewind(itemsDB);
-                fgets(buffer, sizeof(buffer), itemsDB);
-                int index = 0;
-                while (fgets(buffer, sizeof(buffer), itemsDB))
-                {
-                    char *dbItemName = strtok(buffer, "|");
-                    char *dbItemIdentifier = strtok(NULL, "|");
-                    char *dbItemPrice = strtok(NULL, "|");
-
-                    itemsDBEntries[index] = (ItemsDatabaseEntry){
-                        .itemName = strdup(dbItemName),
-                        .itemIdentifier = strdup(dbItemIdentifier),
-                        .itemPrice = atoi(dbItemPrice),
-                    };
-
-                    index++;
-                }
-
                 for (int i = toShowStartIndex; i < toShowEndIndex; i++)
                 {
 
@@ -191,9 +158,7 @@ void RemoveItemPage(void)
             }
         }
         if (key == KEY_ESCAPE)
-        {
             break;
-        }
 
         switch (key)
         {

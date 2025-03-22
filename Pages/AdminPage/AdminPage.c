@@ -46,7 +46,7 @@ void AdminPage(void)
         for (int i = 0; i < numberOfPages; i++)
         {
 
-            i == cursor ? printf("%s", coloredCusor()) : printf("  ");
+            i == cursor ? printColoredCursor() : printf("  ");
 
             printf(" %s\n", pageEntries[i].displayName);
         }

@@ -11,11 +11,6 @@ void AddItemPage(void)
     initializeDatabases();
 
     FILE *itemsDatabase = fopen(itemsDatabasePath, "a+"); // Open the items.csv file in append mode + read mode
-    if (!itemsDatabase)
-    {
-        perror("Failed to open itemsDatabase");
-        return;
-    }
 
     char *itemName = (char *)malloc(sizeof(char));
     char *identifier = (char *)malloc(sizeof(char));
@@ -67,6 +62,8 @@ void AddItemPage(void)
         fgets(buffer, sizeof(buffer), itemsDatabase);        // Skip header
         while (fgets(buffer, sizeof(buffer), itemsDatabase)) // Scan every line of items.csv
         {
+            buffer[strcspn(buffer, "\n")] = '\0';
+
             char *dbItemName = strtok(buffer, "|");
             char *dbItemIdentifer = strtok(NULL, "|");
             if (dbItemIdentifer && strcmp(dbItemIdentifer, identifier) == 0)
@@ -95,12 +92,11 @@ void AddItemPage(void)
             {
                 printf("%s: %d", fields[i].data.textField.displayName,
                        *fields[i].data.numberField.var);
+                break;
             }
 
             default:
-            {
                 break;
-            }
             }
             if ((i == cursor) && (fields[cursor].type != BoolField_Type))
                 printf("%s", ansi_colorize(" ", (ANSI_SGR[]){ANSI_BG_WHITE}, 1));
@@ -155,6 +151,7 @@ void AddItemPage(void)
                         {
                             printf("%s: %d", fields[i].data.textField.displayName,
                                    *fields[i].data.numberField.var);
+                            break;
                         }
 
                         default:
@@ -179,9 +176,7 @@ void AddItemPage(void)
                         break;
                     }
                     else if (key2 == KEY_n)
-                    {
                         break;
-                    }
 
                     refreshDelay();
                 }
@@ -220,13 +215,12 @@ void AddItemPage(void)
             }
 
             case TextField_Type:
-            case PasswordField_Type:
             {
                 if (strlen(*fields[cursor].data.textField.var) > 0)
                 {
                     size_t stringLength = strlen(*fields[cursor].data.textField.var);
                     (*fields[cursor].data.textField.var)[stringLength - 1] = '\0';
-                    *fields[cursor].data.textField.var = realloc(*fields[cursor].data.textField.var, stringLength);
+                    (*fields[cursor].data.textField.var) = realloc((*fields[cursor].data.textField.var), stringLength);
                 }
                 break;
             }
@@ -246,15 +240,12 @@ void AddItemPage(void)
             case NumberField_Type:
             {
                 if (c >= '0' && c <= '9')
-                {
                     *fields[cursor].data.numberField.var = ((*fields[cursor].data.numberField.var) * 10) + (c - '0');
-                }
 
                 break;
             }
 
             case TextField_Type:
-            case PasswordField_Type:
             {
                 if (temp[0] != '\0')
                 {
