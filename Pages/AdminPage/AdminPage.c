@@ -4,6 +4,7 @@
 #include "Subpages/header_files/EnrollAccountPage.h"
 #include "Subpages/header_files/AddItemPage.h"
 #include "Subpages/header_files/RemoveItemPage.h"
+#include "Subpages/header_files/RemoveUserPage.h"
 #include "../../Tools/Tools.h"
 
 typedef struct
@@ -28,10 +29,11 @@ const PageEntry pageEntries[] = {
     },
 };
 
+const int numberOfPages = sizeof(pageEntries) / sizeof(pageEntries[0]);
+
 void AdminPage(void)
 {
     int cursor = 0;
-    int numberOfPages = 3;
 
     while (true)
     {

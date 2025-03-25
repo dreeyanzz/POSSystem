@@ -12,3 +12,6 @@ folder creating, _mkdir()
 size_t
 printf("%*s", width, string) '*' is like the width part and then 's' is the string
 strdup()
+iteration of arrays via pointers (pointer arithmethic), increment operator sa pointer
+how to document things in VSCode with comments
+better naming variables

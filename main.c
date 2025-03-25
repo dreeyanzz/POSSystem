@@ -120,7 +120,6 @@ void LogInPage(User *userData)
 
         cursor = 0;
 
-        // Input loop: continues until the user presses ENTER.
         while (true)
         {
             clearTerminal();
@@ -144,9 +143,7 @@ void LogInPage(User *userData)
                 {
 
                     if (fields[i].data.passwordField.showPassword)
-                    {
                         printf("%s: %s", fields[i].data.passwordField.displayName, *fields[i].data.passwordField.var);
-                    }
                     else
                     {
 
@@ -179,13 +176,11 @@ void LogInPage(User *userData)
             char temp[2] = {c, '\0'};
 
             if (key == KEY_ENTER)
-            {
                 break;
-            }
             else if (key == KEY_ESCAPE)
             {
                 clearTerminal();
-                printf("Goodbye!");
+                printf("Goodbye!\n");
                 exit(0);
             }
 
@@ -194,9 +189,7 @@ void LogInPage(User *userData)
             case KEY_EQUALS:
             {
                 if (fields[cursor].type == PasswordField_Type)
-                {
                     fields[cursor].data.passwordField.showPassword = !fields[cursor].data.passwordField.showPassword;
-                }
 
                 break;
             }
@@ -310,10 +303,11 @@ void Decider(Status status)
         break;
     }
 }
+
 bool authenticate(char *inputUsername, char *inputPassword, User *userData)
 {
 
-    FILE *file = fopen(accountsDatabasePath, "r"); // Open the accounts.csv file in read mode
+    FILE *file = fopen(accountsDatabasePath, "r");
     if (file == NULL)
     {
         initializeDatabases();
@@ -332,15 +326,10 @@ bool authenticate(char *inputUsername, char *inputPassword, User *userData)
 
     char line[1024];
     bool isAuthenticated = false;
-    /*
-        Scan through the file(accounts.csv) line by line
-    */
-    fgets(line, sizeof(line), file); // Skip the header since we don't need it
-
+    fgets(line, sizeof(line), file);
     while (fgets(line, sizeof(line), file))
     {
-        // Remove the newline character from the line
-        line[strcspn(line, "\n")] = '\0';
+        line[strcspn(line, "\n")] = '\0'; // Remove the newline character from the line
 
         /*
             Split the line into tokens using the vertical bar(|) as the separator.
