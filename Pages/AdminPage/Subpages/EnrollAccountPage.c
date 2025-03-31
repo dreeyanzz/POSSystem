@@ -6,6 +6,8 @@
 #include "../../../Tools/FieldType.h"
 #include "../../../Tools/Database.h"
 
+static void pageHeader();
+
 void EnrollAccountPage(void)
 {
     initializeDatabases();
@@ -13,7 +15,7 @@ void EnrollAccountPage(void)
     FILE *accountsDatabase = fopen(accountsDatabasePath, "a+"); // Open the accounts.csv file in append mode + read mode
     if (!accountsDatabase)
     {
-        perror("Failed to open accountsDatabase");
+        perror("Error in EnrollAccountPage");
         return;
     }
 
@@ -68,9 +70,7 @@ void EnrollAccountPage(void)
     {
         clearTerminal();
 
-        printf("Enroll Account Page\n");
-        printf("Current Datetime: %s\n", getFormattedCurrentDateTime());
-        printf("Press [esc] to go back.\n");
+        pageHeader();
         printf("\n");
 
         char buffer[1024];
@@ -162,9 +162,6 @@ void EnrollAccountPage(void)
                 {
                     clearTerminal();
 
-                    printf("Enroll Account Page\n");
-                    printf("Current Datetime: %s\n", getFormattedCurrentDateTime());
-                    printf("Press [esc] to go back.\n");
                     printf("\n");
 
                     for (int i = 0; i < numberOfFields; i++)
@@ -306,4 +303,12 @@ void EnrollAccountPage(void)
     }
 
     fclose(accountsDatabase);
+}
+
+static void pageHeader()
+{
+    printf("Enroll Account Page\n");
+    printf("Current Datetime: %s\n", getFormattedCurrentDateTime());
+    printf("Press [=] to toggle password visibility.\n");
+    printf("Press [esc] to go back.\n");
 }

@@ -9,9 +9,9 @@
 #include "../../../Tools/FieldType.h"
 #include "../../../Tools/Database.h"
 
-void printHeader();
+static void pageHeader();
 
-const int columnWidth = 30;
+const static int columnWidth = 35;
 
 void RemoveItemPage(void)
 {
@@ -22,7 +22,7 @@ void RemoveItemPage(void)
     ItemsDatabaseEntry *itemsDBEntries = (ItemsDatabaseEntry *)malloc(sizeof(ItemsDatabaseEntry));
 
     int selectedEntryIndex = 0;
-    const int maxEntriesToShow = 4;
+    const int maxEntriesToShow = 5;
 
     int numEntries = countEntries(itemsDB);
     int numItemsToShow = (numEntries >= maxEntriesToShow ? maxEntriesToShow : numEntries);
@@ -34,7 +34,8 @@ void RemoveItemPage(void)
     {
         clearTerminal();
 
-        printHeader();
+        pageHeader();
+        !itemsDB ? printf("Error opening Items Database\n") : printf("");
         printf("\n");
 
         int numEntries = countEntries(itemsDB);
@@ -74,10 +75,22 @@ void RemoveItemPage(void)
             index++;
         }
 
+        printf("Press [enter] to remove item.\n");
+        printf("  ");
+        printf("|");
+        printCentered("Item Name", columnWidth);
+        printf("|");
+        printCentered("Item Identifier", columnWidth);
+        printf("|");
+        printCentered("Item Price", columnWidth);
+        printf("|");
+
         for (int i = toShowStartIndex; i < toShowEndIndex; i++)
         {
 
             const ItemsDatabaseEntry currentEntry = itemsDBEntries[i];
+
+            printf("\n");
 
             if (i == selectedEntryIndex)
             {
@@ -96,8 +109,6 @@ void RemoveItemPage(void)
             printf("|");
 
             ansi_colorize_end();
-
-            printf("\n");
         }
         printf("\n");
 
@@ -109,7 +120,7 @@ void RemoveItemPage(void)
 
                 clearTerminal();
 
-                printHeader();
+                pageHeader();
                 printf("\n");
 
                 for (int i = toShowStartIndex; i < toShowEndIndex; i++)
@@ -117,6 +128,7 @@ void RemoveItemPage(void)
 
                     const ItemsDatabaseEntry currentEntry = itemsDBEntries[i];
 
+                    printf("Press [enter] to remove item.\n");
                     if (i == selectedEntryIndex)
                     {
                         printColoredCursor();
@@ -124,7 +136,6 @@ void RemoveItemPage(void)
                     }
                     else
                         printf("  ");
-
                     printf("|");
                     printCentered(currentEntry.itemName, columnWidth);
                     printf("|");
@@ -188,10 +199,9 @@ void RemoveItemPage(void)
     fclose(itemsDB);
 }
 
-void printHeader()
+static void pageHeader()
 {
     printf("Remove Item Page\n");
     printf("Current Datetime: %s\n", getFormattedCurrentDateTime());
-    printf("Press [enter] to remove item.\n");
     printf("Press [esc] to go back.\n");
 }

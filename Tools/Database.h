@@ -40,6 +40,7 @@ void InitializeItemsDatabase();
 void AddItemToDatabase(const char *itemName, const char *identifier, const long price);
 
 void removeItemsDatabaseEntryByIdentifier(const char *identifier);
+void removeAccountDatabaseEntryByIdentifier(const char *identifier);
 
 int countEntries(FILE *db);
 

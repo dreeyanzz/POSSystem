@@ -4,17 +4,16 @@
 #include "Subpages/header_files/EnrollAccountPage.h"
 #include "Subpages/header_files/AddItemPage.h"
 #include "Subpages/header_files/RemoveItemPage.h"
-#include "Subpages/header_files/RemoveUserPage.h"
+#include "Subpages/header_files/RemoveAccountPage.h"
 #include "../../Tools/Tools.h"
 
 typedef struct
 {
     char displayName[100];
     void *pageFunc;
-
 } PageEntry;
 
-const PageEntry pageEntries[] = {
+static const PageEntry pageEntries[] = {
     {
         "Add Account",
         &EnrollAccountPage,
@@ -27,9 +26,14 @@ const PageEntry pageEntries[] = {
         "Remove Item",
         &RemoveItemPage,
     },
+    {
+        "Remove Account",
+        &RemoveAccountPage,
+    },
 };
+static const int numberOfPages = sizeof(pageEntries) / sizeof(pageEntries[0]);
 
-const int numberOfPages = sizeof(pageEntries) / sizeof(pageEntries[0]);
+static void pageHeader();
 
 void AdminPage(void)
 {
@@ -39,9 +43,6 @@ void AdminPage(void)
     {
         clearTerminal();
 
-        printf("Admin Page\n");
-        printf("Current Datetime: %s\n", getFormattedCurrentDateTime());
-        printf("Press [esc] to log out.\n");
         printf("\n");
 
         printf("Press [enter] to enter the page.\n");
@@ -87,4 +88,10 @@ void AdminPage(void)
 
         refreshDelay();
     }
+}
+static void pageHeader()
+{
+    printf("Admin Page\n");
+    printf("Current Datetime: %s\n", getFormattedCurrentDateTime());
+    printf("Press [esc] to log out.\n");
 }

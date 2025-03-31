@@ -6,6 +6,8 @@
 #include "../../../Tools/FieldType.h"
 #include "../../../Tools/Database.h"
 
+static void pageHeader();
+
 void AddItemPage(void)
 {
     initializeDatabases();
@@ -268,4 +270,12 @@ void AddItemPage(void)
     }
 
     fclose(itemsDatabase);
+}
+
+static void pageHeader()
+{
+    printf("Enroll Account Page\n");
+    printf("Current Datetime: %s\n", getFormattedCurrentDateTime());
+    printf("Press [enter] to confirm.\n");
+    printf("Press [esc] to go back.\n");
 }

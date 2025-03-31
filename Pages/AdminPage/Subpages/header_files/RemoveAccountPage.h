@@ -1,6 +1,6 @@
 #ifndef REMOVEUSERPAGE_H
 #define REMOVEUSERPAGE_H
 
-void RemoveUserPage();
+void RemoveAccountPage();
 
 #endif

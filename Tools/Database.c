@@ -110,6 +110,46 @@ void removeItemsDatabaseEntryByIdentifier(const char *identifier)
     free(newItemsDatabasePath);
 }
 
+void removeAccountDatabaseEntryByIdentifier(const char *identifier)
+{
+
+    const char *tempAccountsDatabaseName = "temp.csv";
+
+    size_t allocatedSize = strlen(databasesPath) + 1 /* slash */ + strlen(tempAccountsDatabaseName) + 1 /* null terminator */;
+    char *newAccountsDatabasePath = malloc(allocatedSize);
+    snprintf(newAccountsDatabasePath, allocatedSize, "%s/%s", databasesPath, tempAccountsDatabaseName);
+
+    FILE *accountsDatabase = fopen(accountsDatabasePath, "r");
+    FILE *newAccountsDatabase = fopen(newAccountsDatabasePath, "w");
+
+    fprintf(newAccountsDatabase, "username|password|displayName|status|identifier\n"); // header
+
+    rewind(accountsDatabase);
+    char buffer[1024];
+    fgets(buffer, sizeof(buffer), accountsDatabase);
+    while (fgets(buffer, sizeof(buffer), accountsDatabase))
+    {
+        char *dbUsername = strtok(buffer, "|");
+        char *dbPassword = strtok(NULL, "|");
+        char *dbDisplayName = strtok(NULL, "|");
+        char *dbStatus = strtok(NULL, "|");
+        char *dbAccountItentifier = strtok(NULL, "|");
+
+        dbAccountItentifier[strcspn(dbAccountItentifier, "\n")] = '\0';
+
+        if (strcmp(identifier, dbAccountItentifier) != 0)
+            fprintf(newAccountsDatabase, "%s|%s|%s|%s|%s\n", dbUsername, dbPassword, dbDisplayName, dbStatus, dbAccountItentifier);
+    }
+
+    fclose(accountsDatabase);
+    fclose(newAccountsDatabase);
+
+    remove(accountsDatabasePath);
+    rename(newAccountsDatabasePath, accountsDatabasePath);
+
+    free(newAccountsDatabasePath);
+}
+
 int countEntries(FILE *db)
 {
 
