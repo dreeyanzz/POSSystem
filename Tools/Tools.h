@@ -199,6 +199,12 @@ typedef enum ANSI_SGR
     ANSI_BRIGHT_BG_WHITE = 107
 } ANSI_SGR;
 
+typedef struct
+{
+    char displayName[100];
+    void *pageFunc;
+} PageEntry;
+
 // String manipulations
 
 char *ansi_colorize(const char *string, ANSI_SGR configurations[], size_t numConfigs);

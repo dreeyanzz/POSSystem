@@ -113,9 +113,7 @@ void EnrollAccountPage(void)
             {
 
                 if (fields[i].data.passwordField.showPassword)
-                {
                     printf("%s: %s", fields[i].data.passwordField.displayName, *fields[i].data.passwordField.var);
-                }
                 else
                 {
 
@@ -224,9 +222,7 @@ void EnrollAccountPage(void)
                         break;
                     }
                     else if (key2 == KEY_n)
-                    {
                         break;
-                    }
 
                     refreshDelay();
                 }
@@ -240,9 +236,7 @@ void EnrollAccountPage(void)
         case KEY_EQUALS:
         {
             if (fields[cursor].type == PasswordField_Type)
-            {
                 fields[cursor].data.passwordField.showPassword = !fields[cursor].data.passwordField.showPassword;
-            }
 
             break;
         }

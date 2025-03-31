@@ -5,13 +5,8 @@
 #include "Subpages/header_files/AddItemPage.h"
 #include "Subpages/header_files/RemoveItemPage.h"
 #include "Subpages/header_files/RemoveAccountPage.h"
+#include "Subpages/header_files/StoreStatusPage.h"
 #include "../../Tools/Tools.h"
-
-typedef struct
-{
-    char displayName[100];
-    void *pageFunc;
-} PageEntry;
 
 static const PageEntry pageEntries[] = {
     {
@@ -30,6 +25,10 @@ static const PageEntry pageEntries[] = {
         "Remove Account",
         &RemoveAccountPage,
     },
+    {
+        "Store Status",
+        &StoreStatusPage,
+    },
 };
 static const int numberOfPages = sizeof(pageEntries) / sizeof(pageEntries[0]);
 
@@ -43,6 +42,7 @@ void AdminPage(void)
     {
         clearTerminal();
 
+        pageHeader();
         printf("\n");
 
         printf("Press [enter] to enter the page.\n");

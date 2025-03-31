@@ -143,7 +143,6 @@ void RemoveItemPage(void)
                     printf("|");
                     printCentered(inttoascii(currentEntry.itemPrice), columnWidth);
                     printf("|");
-
                     ansi_colorize_end();
 
                     printf("\n");

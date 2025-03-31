@@ -272,7 +272,7 @@ void AddItemPage(void)
     fclose(itemsDatabase);
 }
 
-static void pageHeader()
+void pageHeader()
 {
     printf("Enroll Account Page\n");
     printf("Current Datetime: %s\n", getFormattedCurrentDateTime());

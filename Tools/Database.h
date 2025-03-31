@@ -6,8 +6,10 @@
 extern const char *databasesPath;
 extern char accountsDatabasePath[256];
 extern char itemsDatabasePath[256];
+extern char isOpenDatabasePath[256];
 extern const char *accountsDatabaseName;
 extern const char *itemsDatabaseName;
+extern const char *isOpenDatabaseName;
 
 typedef enum
 {
@@ -43,5 +45,7 @@ void removeItemsDatabaseEntryByIdentifier(const char *identifier);
 void removeAccountDatabaseEntryByIdentifier(const char *identifier);
 
 int countEntries(FILE *db);
+
+bool getIsOpenStatus();
 
 #endif

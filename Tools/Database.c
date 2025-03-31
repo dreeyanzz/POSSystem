@@ -8,13 +8,16 @@
 const char *databasesPath = "Databases";
 char accountsDatabasePath[256];
 char itemsDatabasePath[256];
+char isOpenDatabasePath[256];
 const char *accountsDatabaseName = "accounts.csv";
 const char *itemsDatabaseName = "items.csv";
+const char *isOpenDatabaseName = "isOpen.csv";
 
 void initializeDatabases()
 {
     snprintf(accountsDatabasePath, sizeof(accountsDatabasePath), "%s/%s", databasesPath, accountsDatabaseName);
     snprintf(itemsDatabasePath, sizeof(itemsDatabasePath), "%s/%s", databasesPath, itemsDatabaseName);
+    snprintf(isOpenDatabasePath, sizeof(isOpenDatabasePath), "%s/%s", databasesPath, isOpenDatabaseName);
 
     createFolderIfNotExists(databasesPath);
     InitializeAccountsDatabase();
@@ -172,4 +175,24 @@ int countEntries(FILE *db)
     rewind(db); // put the pointer again to the top
 
     return numEntries;
+}
+
+bool getIsOpenStatus()
+{
+    FILE *isOpenDatabase = fopen(isOpenDatabasePath, "r");
+    if (isOpenDatabase == NULL)
+    {
+        isOpenDatabase = fopen(isOpenDatabasePath, "w");
+        fprintf(isOpenDatabase, "false");
+        fclose(isOpenDatabase);
+        return false;
+    }
+
+    char buffer[10];
+    fgets(buffer, sizeof(buffer), isOpenDatabase);
+    bool isOpen = strcmp(buffer, "true") == 0;
+
+    fclose(isOpenDatabase);
+
+    return isOpen;
 }
