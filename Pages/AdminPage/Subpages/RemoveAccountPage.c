@@ -187,7 +187,7 @@ void confirmRemoval()
 
         showAccountsDBEntries();
 
-        printf("Are you sure you want to remove this item? Please review before proceeding.\n");
+        printf("Are you sure you want to remove this account? Please review before proceeding.\n");
         printf("Press [y] for yes, [n] for no.\n");
 
         KeyboardKey key2 = getKeyPressInsensitive();
