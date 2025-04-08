@@ -108,7 +108,7 @@ void UserPage()
 
 static void pageHeader()
 {
-    printf("Admin Page\n");
+    printf("User Page\n");
     printf("Current Datetime: %s\n", getFormattedCurrentDateTime());
     printf("Press [esc] to log out.\n");
 }

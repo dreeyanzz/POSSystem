@@ -123,12 +123,12 @@ void RemoveItemPage(void)
                 pageHeader();
                 printf("\n");
 
+                printf("Press [enter] to remove item.\n");
                 for (int i = toShowStartIndex; i < toShowEndIndex; i++)
                 {
 
                     const ItemsDatabaseEntry currentEntry = itemsDBEntries[i];
 
-                    printf("Press [enter] to remove item.\n");
                     if (i == selectedEntryIndex)
                     {
                         printColoredCursor();
