@@ -192,6 +192,12 @@ void RemoveAccountPage()
                 {
                     fclose(accountsDatabase);
                     removeAccountDatabaseEntryByIdentifier(strdup(accountsDBEntries[selectedEntryIndex].identifier));
+                    if (toShowStartIndex > 0)
+                    {
+                        toShowStartIndex--;
+                        toShowEndIndex--;
+                        selectedEntryIndex--;
+                    }
                     accountsDatabase = fopen(accountsDatabasePath, "a+");
 
                     break;

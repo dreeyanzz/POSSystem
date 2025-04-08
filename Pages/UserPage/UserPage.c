@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "UserPage.h"
+#include "Subpages/header_files/ScanPage.h"
 #include "../../Tools/Tools.h"
 #include "../../Tools/Database.h"
 
@@ -8,20 +9,8 @@ static void pageHeader();
 
 static const PageEntry pageEntries[] = {
     {
-        "User Page",
-        &UserPage,
-    },
-    {
-        "User Page",
-        &UserPage,
-    },
-    {
-        "User Page",
-        &UserPage,
-    },
-    {
-        "User Page",
-        &UserPage,
+        "Scan Page",
+        &ScanPage,
     },
 };
 static const int numberOfPages = sizeof(pageEntries) / sizeof(pageEntries[0]);

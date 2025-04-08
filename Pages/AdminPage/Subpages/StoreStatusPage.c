@@ -27,6 +27,7 @@ void StoreStatusPage(void)
         clearTerminal();
 
         pageHeader();
+        printf("The store is currently %s.\n", isOpen ? "open" : "closed");
         printf("\n");
 
         rewind(statusDB);
@@ -34,7 +35,6 @@ void StoreStatusPage(void)
         isOpen = (strcmp(status, "true") == 0) ? true : false;
 
         printf("Press [left arrow] or [right arrow] or [tab] to toggle the store status.\n");
-        printf("Current Status: <- %s ->", isOpen ? "Open" : "Closed");
 
         KeyboardKey key = getKeyPressInsensitive();
         if (key == KEY_ESCAPE)
@@ -69,8 +69,7 @@ void StoreStatusPage(void)
 
 void pageHeader()
 {
-    printf("Enroll Account Page\n");
+    printf("Store Status Page\n");
     printf("Current Datetime: %s\n", getFormattedCurrentDateTime());
-    printf("Press [enter] to confirm.\n");
     printf("Press [esc] to go back.\n");
 }
