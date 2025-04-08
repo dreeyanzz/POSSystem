@@ -45,7 +45,7 @@ void ScanPage()
         printf("selectedEntryIndex: %d\n", selectedEntryIndex);
         printf("\n");
 
-        showItemsDBEntries();
+        numItemsDBEntries == 0 ? printf("No items yet. Please ask an administrator to add some.\n") : showItemsDBEntries();
 
         KeyboardKey key = getKeyPressInsensitive();
 
@@ -67,9 +67,16 @@ void ScanPage()
                 break;
             }
 
+        for (int i = 0; i < numItemsDBEntries; i++)
+        {
+            free(itemsDBEntries[i].itemName);
+            free(itemsDBEntries[i].itemIdentifier);
+        }
         free(itemsDBEntries);
         refreshDelay();
     }
+
+    fclose(itemsDB);
 }
 
 void pageHeader()
