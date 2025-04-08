@@ -12,6 +12,9 @@ items.csv - serves as database table para sa mga items
             silbe mura ra pud siya ug enroll account pero item lang siya
           - no default nga item for this one kay no purpose ra gihapon
 
+isOpen.csv - serves as "persistent" boolean variable
+           - dili isave ang `true` or `false` para bisan ug mo-exit sa program kay madetermine gihapon kung open or close ba ang store or not
+
 Pages (folder) - diri naka store ang mga pages after sa login page
                - diri na nag branch out tanan pages sa program
                - mao ni ang silbe "root" sa tanan pages

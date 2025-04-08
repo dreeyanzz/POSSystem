@@ -138,18 +138,14 @@ void showItemsDBEntries()
 {
     printf("  ");
     ansi_colorize_start((ANSI_SGR[]){ANSI_UNDERLINE, ANSI_OVERLINE, ANSI_BOLD}, 3);
-    printf("|");
-    printCentered("Item Name", columnWidth);
-    printf("|");
-    printCentered("Item Identifier", columnWidth);
-    printf("|");
-    printCentered("Item Price", columnWidth);
-    printf("|");
+    printRow(columnWidth, 3,
+             "Item Name",
+             "Item Identifier",
+             "Item Price");
     ansi_colorize_end();
-    printf("\n");
     for (int i = toShowStartIndex; i <= toShowEndIndex; i++)
     {
-        const ItemsDatabaseEntry currentEntry = itemsDBEntries[i];
+        const ItemsDatabaseEntry entry = itemsDBEntries[i];
 
         if (i == selectedEntryIndex)
         {
@@ -161,14 +157,11 @@ void showItemsDBEntries()
 
         if (i == toShowEndIndex)
             ansi_colorize_start((ANSI_SGR[]){ANSI_UNDERLINE}, 1);
-        printf("|");
-        printCentered(currentEntry.itemName, columnWidth);
-        printf("|");
-        printCentered(currentEntry.itemIdentifier, columnWidth);
-        printf("|");
-        printCentered(inttoascii(currentEntry.itemPrice), columnWidth);
-        printf("|");
-        printf("\n");
+
+        printRow(columnWidth, 3,
+                 entry.itemName,
+                 entry.itemIdentifier,
+                 inttoascii(entry.itemPrice));
 
         ansi_colorize_end();
     }

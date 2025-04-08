@@ -1,244 +1,216 @@
 #include <stdio.h>
-#include <stdbool.h>
 #include <stdlib.h>
-#include <ctype.h>
-#include <math.h>
 #include <string.h>
 #include "header_files/RemoveAccountPage.h"
 #include "../../../Tools/Tools.h"
 #include "../../../Tools/FieldType.h"
 #include "../../../Tools/Database.h"
 
-static void pageHeader();
+static const int columnWidth = 35;
+static const int maxEntriesToShow = 7;
 
-const static int columnWidth = 35;
+static void pageHeader();
+static void fillAccountsDBEntries();
+static void adjustEntriesToShow();
+static void showAccountsDBEntries();
+
+static void confirmRemoval();
+
+static FILE *accountsDB;
+static AccountsDatabaseEntry *accountsDBEntries;
+static int numAccountsDBEntries;
+
+static int numItemsToShow;
+static int toShowStartIndex = 0;
+static int toShowEndIndex;
+
+static int selectedEntryIndex = 0;
 
 void RemoveAccountPage()
 {
-    initializeDatabases();
-
-    FILE *accountsDatabase = fopen(accountsDatabasePath, "a+");
-    if (!accountsDatabase)
-    {
-        perror("Error in RemoveAccountPage()");
-        return;
-    }
-
-    AccountsDatabaseEntry *accountsDBEntries = (AccountsDatabaseEntry *)malloc(sizeof(AccountsDatabaseEntry));
-
-    int selectedEntryIndex = 0;
-    const int maxEntriesToShow = 5;
-
-    int numEntries = countEntries(accountsDatabase);
-    int numItemsToShow = (numEntries >= maxEntriesToShow ? maxEntriesToShow : numEntries);
-
-    int toShowStartIndex = 0;
-    int toShowEndIndex = (toShowStartIndex + numItemsToShow);
+    accountsDB = fopen(accountsDatabasePath, "a+");
 
     while (true)
     {
         clearTerminal();
 
+        numAccountsDBEntries = countEntries(accountsDB);
+        accountsDBEntries = (AccountsDatabaseEntry *)malloc(numAccountsDBEntries * sizeof(AccountsDatabaseEntry));
+        fillAccountsDBEntries();
+
+        numItemsToShow = numAccountsDBEntries >= maxEntriesToShow ? maxEntriesToShow : numAccountsDBEntries;
+        toShowEndIndex = toShowStartIndex + numItemsToShow - 1;
+
+        adjustEntriesToShow();
+
         pageHeader();
+        printf("selectedEntryIndex: %d\n", selectedEntryIndex);
         printf("\n");
 
-        int numEntries = countEntries(accountsDatabase);
-        int numItemsToShow = (numEntries >= maxEntriesToShow ? maxEntriesToShow : numEntries);
-        accountsDBEntries = realloc(accountsDBEntries, numEntries * sizeof(AccountsDatabaseEntry));
-        int toShowEndIndex = (toShowStartIndex + numItemsToShow);
-
-        printf("numEntries: %d\n", numEntries);
-
-        if (selectedEntryIndex >= toShowEndIndex)
-        {
-            toShowEndIndex++;
-            toShowStartIndex++;
-        }
-        if (selectedEntryIndex < toShowStartIndex)
-        {
-            toShowStartIndex--;
-            toShowEndIndex--;
-        }
-
-        char buffer[1024];
-        rewind(accountsDatabase);
-        fgets(buffer, sizeof(buffer), accountsDatabase);
-        int index = 0;
-        while (fgets(buffer, sizeof(buffer), accountsDatabase))
-        {
-            buffer[strcspn(buffer, "\n")] = '\0';
-
-            char *dbUsername = strtok(buffer, "|");
-            char *dbPassword = strtok(NULL, "|");
-            char *dbDisplayName = strtok(NULL, "|");
-            char *dbStatus = strtok(NULL, "|");
-            char *dbIdentifier = strtok(NULL, "|");
-
-            accountsDBEntries[index] = (AccountsDatabaseEntry){
-                .username = strdup(dbUsername),
-                .password = strdup(dbPassword),
-                .displayName = strdup(dbDisplayName),
-                .accountType = strcmp(dbStatus, "admin") == 0 ? admin : user,
-                .identifier = strdup(dbIdentifier),
-            };
-
-            index++;
-        }
-
-        printf("Press [enter] to remove item.\n");
-        printf("  ");
-        printf("|");
-        printCentered("Username", columnWidth);
-        printf("|");
-        printCentered("Password", columnWidth);
-        printf("|");
-        printCentered("Display Name", columnWidth);
-        printf("|");
-        printCentered("Account Type", columnWidth);
-        printf("|");
-        printCentered("Account Identifier", columnWidth);
-        printf("|");
-        for (int i = toShowStartIndex; i < toShowEndIndex; i++)
-        {
-
-            const AccountsDatabaseEntry currentEntry = accountsDBEntries[i];
-
-            printf("\n");
-
-            if (i == selectedEntryIndex)
-            {
-                printColoredCursor();
-                ansi_colorize_start((ANSI_SGR[]){ANSI_BG_WHITE, ANSI_FG_BLACK, ANSI_BOLD}, 3);
-            }
-            else
-                printf("  ");
-            printf("|");
-            printCentered(currentEntry.username, columnWidth);
-            printf("|");
-            printCentered(currentEntry.password, columnWidth);
-            printf("|");
-            printCentered(currentEntry.displayName, columnWidth);
-            printf("|");
-            printCentered(currentEntry.accountType == admin ? "admin" : "user", columnWidth);
-            printf("|");
-            printCentered(currentEntry.identifier, columnWidth);
-            printf("|");
-
-            ansi_colorize_end();
-        }
-        printf("\n");
+        showAccountsDBEntries();
 
         KeyboardKey key = getKeyPressInsensitive();
+
         if (key == KEY_ESCAPE)
             break;
-        if (key == KEY_ENTER && (strcmp(accountsDBEntries[selectedEntryIndex].identifier, "ehyxccqfugqXgM6Q7QXKPChO3iPffF8o") != 0))
+        else if (key == KEY_ENTER)
         {
-            while (true)
+            if (strcmp(accountsDBEntries[selectedEntryIndex].identifier, "ehyxccqfugqXgM6Q7QXKPChO3iPffF8o") != 0)
+                confirmRemoval();
+        }
+        else
+            switch (key)
             {
-                clearTerminal();
+            case KEY_UP:
+                selectedEntryIndex == 0 ? selectedEntryIndex = numAccountsDBEntries - 1 : selectedEntryIndex--;
+                break;
 
-                pageHeader();
-                printf("\n");
+            case KEY_TAB:
+            case KEY_DOWN:
+                selectedEntryIndex == numAccountsDBEntries - 1 ? selectedEntryIndex = 0 : selectedEntryIndex++;
+                break;
 
-                printf("Press [enter] to remove item.\n");
-                printf("  ");
-                printf("|");
-                printCentered("Username", columnWidth);
-                printf("|");
-                printCentered("Password", columnWidth);
-                printf("|");
-                printCentered("Display Name", columnWidth);
-                printf("|");
-                printCentered("Account Type", columnWidth);
-                printf("|");
-                printCentered("Account Identifier", columnWidth);
-                printf("|");
-                for (int i = toShowStartIndex; i < toShowEndIndex; i++)
-                {
-
-                    const AccountsDatabaseEntry currentEntry = accountsDBEntries[i];
-
-                    printf("\n");
-
-                    if (i == selectedEntryIndex)
-                    {
-                        printColoredCursor();
-                        ansi_colorize_start((ANSI_SGR[]){ANSI_BG_WHITE, ANSI_FG_BLACK, ANSI_BOLD}, 3);
-                    }
-                    else
-                        printf("  ");
-
-                    printf("|");
-                    printCentered(currentEntry.username, columnWidth);
-                    printf("|");
-                    printCentered(currentEntry.password, columnWidth);
-                    printf("|");
-                    printCentered(currentEntry.displayName, columnWidth);
-                    printf("|");
-                    printCentered(currentEntry.accountType == admin ? "admin" : "user", columnWidth);
-                    printf("|");
-                    printCentered(currentEntry.identifier, columnWidth);
-                    printf("|");
-
-                    ansi_colorize_end();
-                }
-                printf("\n");
-
-                printf("\nAre you sure you want to remove this item? Please review before proceeding.\n");
-                printf("Press [y] for yes, [n] for no.\n");
-
-                KeyboardKey key2 = getKeyPressInsensitive();
-                if (key2 == KEY_y)
-                {
-                    fclose(accountsDatabase);
-                    removeAccountDatabaseEntryByIdentifier(strdup(accountsDBEntries[selectedEntryIndex].identifier));
-                    if (toShowStartIndex > 0)
-                    {
-                        toShowStartIndex--;
-                        toShowEndIndex--;
-                        selectedEntryIndex--;
-                    }
-                    accountsDatabase = fopen(accountsDatabasePath, "a+");
-
-                    break;
-                }
-                else if (key2 == KEY_n)
-                    break;
-
-                refreshDelay();
+            default:
+                break;
             }
-        }
-        switch (key)
-        {
-        case KEY_TAB:
-        case KEY_DOWN:
-        {
-            selectedEntryIndex = (selectedEntryIndex == (numEntries - 1) ? 0 : (selectedEntryIndex + 1));
 
-            break;
-        }
-
-        case KEY_UP:
-        {
-            selectedEntryIndex = ((selectedEntryIndex - 1) < 0 ? (numEntries - 1) : (selectedEntryIndex - 1));
-
-            break;
-        }
-
-        default:
-            break;
-        }
-
+        free(accountsDBEntries);
         refreshDelay();
     }
 
-    free(accountsDBEntries);
-    fclose(accountsDatabase);
+    fclose(accountsDB);
 }
 
-static void pageHeader()
+void pageHeader()
 {
     printf("Remove Account Page\n");
     printf("Current Datetime: %s\n", getFormattedCurrentDateTime());
     printf("Press [esc] to go back.\n");
+}
+
+void fillAccountsDBEntries()
+{
+    char buffer[2048];
+    rewind(accountsDB);
+    fgets(buffer, sizeof(buffer), accountsDB);
+    int index = 0;
+    while (fgets(buffer, sizeof(buffer), accountsDB))
+    {
+
+        buffer[strcspn(buffer, "\n")] = '\0';
+
+        char *dbUsername = strtok(buffer, "|");
+        char *dbPassword = strtok(NULL, "|");
+        char *dbDisplayName = strtok(NULL, "|");
+        char *dbStatus = strtok(NULL, "|");
+        char *dbIdentifier = strtok(NULL, "|");
+
+        accountsDBEntries[index] = (AccountsDatabaseEntry){
+            .username = strdup(dbUsername),
+            .password = strdup(dbPassword),
+            .displayName = strdup(dbDisplayName),
+            .accountType = strcmp(dbStatus, "admin") == 0 ? admin : user,
+            .identifier = strdup(dbIdentifier),
+        };
+
+        index++;
+    }
+}
+
+void adjustEntriesToShow()
+{
+    if (selectedEntryIndex > toShowEndIndex)
+    {
+        while (selectedEntryIndex > toShowEndIndex)
+        {
+            toShowStartIndex++;
+            toShowEndIndex++;
+        }
+    }
+    if (selectedEntryIndex < toShowStartIndex)
+    {
+        while (selectedEntryIndex < toShowStartIndex)
+        {
+            toShowStartIndex--;
+            toShowEndIndex--;
+        }
+    }
+}
+
+void showAccountsDBEntries()
+{
+    printf("  ");
+    ansi_colorize_start((ANSI_SGR[]){ANSI_UNDERLINE, ANSI_OVERLINE, ANSI_BOLD}, 3);
+    printRow(columnWidth, 5,
+             "Username",
+             "Password",
+             "Display Name",
+             "Status",
+             "Identifier");
+    ansi_colorize_end();
+    for (int i = toShowStartIndex; i <= toShowEndIndex; i++)
+    {
+        const AccountsDatabaseEntry entry = accountsDBEntries[i];
+
+        if (i == selectedEntryIndex)
+        {
+            printColoredCursor();
+            ansi_colorize_start((ANSI_SGR[]){ANSI_FG_BLACK, ANSI_BG_WHITE, ANSI_BOLD}, 3);
+        }
+        else
+            printf("  ");
+
+        if (i == toShowEndIndex)
+            ansi_colorize_start((ANSI_SGR[]){ANSI_UNDERLINE}, 1);
+
+        printRow(columnWidth, 5,
+                 entry.username,
+                 entry.password,
+                 entry.displayName,
+                 entry.accountType == admin ? "admin" : "user",
+                 entry.identifier);
+
+        ansi_colorize_end();
+    }
+    printf("\n");
+}
+
+void confirmRemoval()
+{
+    while (true)
+    {
+        clearTerminal();
+
+        pageHeader();
+        printf("selectedEntryIndex: %d\n", selectedEntryIndex);
+        printf("\n");
+
+        showAccountsDBEntries();
+
+        printf("Are you sure you want to remove this item? Please review before proceeding.\n");
+        printf("Press [y] for yes, [n] for no.\n");
+
+        KeyboardKey key2 = getKeyPressInsensitive();
+
+        if (key2 == KEY_y)
+        {
+            fclose(accountsDB);
+
+            char *accountIdentifier = strdup(accountsDBEntries[selectedEntryIndex].identifier);
+
+            removeAccountDatabaseEntryByIdentifier(accountIdentifier);
+            if (selectedEntryIndex > 0)
+                selectedEntryIndex--;
+            if (toShowStartIndex > 0)
+                toShowStartIndex--;
+            toShowEndIndex--;
+            accountsDB = fopen(accountsDatabasePath, "a+");
+
+            break;
+        }
+        else if (key2 == KEY_n)
+            break;
+
+        refreshDelay();
+    }
 }

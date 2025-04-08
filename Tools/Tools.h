@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include <stdarg.h>
 
 /* Enumeration for common keyboard keys.
    Non-letter keys are grouped separately.
@@ -290,5 +291,9 @@ char *getFormattedCurrentDateTime();
 // --to be named--
 
 void createFolderIfNotExists(const char *folder);
+
+// with stdarg.h
+
+void printRow(int columnWidth, int count, ...);
 
 #endif // TOOLS_H

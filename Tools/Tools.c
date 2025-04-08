@@ -365,3 +365,21 @@ void createFolderIfNotExists(const char *folder)
 {
     _mkdir(folder);
 }
+
+void printRow(int columnWidth, int count, ...)
+{
+    va_list args;
+    va_start(args, count);
+
+    printf("|");
+
+    for (int i = 0; i < count; i++)
+    {
+        char *currentString = va_arg(args, char *);
+        printCentered(currentString, columnWidth);
+        printf("|");
+    }
+    printf("\n");
+
+    va_end(args);
+}

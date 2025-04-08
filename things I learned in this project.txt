@@ -16,3 +16,4 @@ iteration of arrays via pointers (pointer arithmethic), increment operator sa po
 how to document things in VSCode with comments
 better naming variables
 static for local scope variables
+stdarg is like --------- (...) are treated like an array???
