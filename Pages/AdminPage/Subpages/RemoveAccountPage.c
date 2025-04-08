@@ -47,6 +47,8 @@ void RemoveAccountPage()
         accountsDBEntries = realloc(accountsDBEntries, numEntries * sizeof(AccountsDatabaseEntry));
         int toShowEndIndex = (toShowStartIndex + numItemsToShow);
 
+        printf("numEntries: %d\n", numEntries);
+
         if (selectedEntryIndex >= toShowEndIndex)
         {
             toShowEndIndex++;
@@ -191,6 +193,7 @@ void RemoveAccountPage()
                     fclose(accountsDatabase);
                     removeAccountDatabaseEntryByIdentifier(strdup(accountsDBEntries[selectedEntryIndex].identifier));
                     accountsDatabase = fopen(accountsDatabasePath, "a+");
+
                     break;
                 }
                 else if (key2 == KEY_n)

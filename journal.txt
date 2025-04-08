@@ -18,3 +18,9 @@ Pages (folder) - diri naka store ang mga pages after sa login page
                - naa ni siyay duha ka part, AdminPage ug UserPage
                - AdminPage kay para sa tanan nga admin_side
                - UserPage kay para sa tanan nga user_side
+
+AdminPage.c - diri naka branch out tanan admin related stuffs
+            - silbi mao ni ang 'head' para sa tanan admin operations
+
+UserPage.c - diri naka branch out tanan user/cashier related stuffs
+           - silbi mao ni ang 'head' para sa tanan admin operations

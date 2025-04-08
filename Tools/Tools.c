@@ -97,7 +97,6 @@ char *inttoascii(int num)
 
 char *coloredCusor()
 {
-
     return ansi_colorize("->", (ANSI_SGR[]){ANSI_FG_GREEN}, 1);
 }
 
@@ -338,58 +337,16 @@ void refreshDelay()
     Sleep(1000 / 50);
 }
 
-/*
-    Clears the terminal screen
-
-    Types `cls` on Windows
-*/
 void clearTerminal()
 {
     system("cls");
 }
 
-/*
-   Returns the current time of the system as a `time_t` object.
-
-    `time_t` is a type that represents the number of seconds
-    since the Unix Epoch (00:00:00 UTC, January 1, 1970).
-*/
 time_t getCurrentTime()
 {
     return time(NULL);
 }
 
-/*
-    Returns the current date and time in the following format:
-    "MONTH DD, YYYY | HH:MM:SS AM/PM"
-
-    Example: "January 01, 2022 12:00:00 AM"
-
-    Syntax goes as `strftime(buffer, sizeof(buffer), "%B %d, | %Y %I:%M:%S %p", local);`
-
-    `%a` – Abbreviated weekday name (e.g., "Sun")
-    `%A` – Full weekday name (e.g., "Sunday")
-    `%b` – Abbreviated month name (e.g., "Jan")
-    `%B` – Full month name (e.g., "January")
-    `%c` – Date and time representation for the current locale
-    `%d` – Day of the month as a two-digit number (01–31)
-    `%H` – Hour in 24-hour format (00–23)
-    `%I` – Hour in 12-hour format (01–12)
-    `%j` – Day of the year as a three-digit number (001–366)
-    `%m` – Month as a two-digit number (01–12)
-    `%M` – Minute as a two-digit number (00–59)
-    `%p` – AM or PM designation
-    `%S` – Second as a two-digit number (00–60)
-    `%U` – Week number of the year (Sunday as the first day, 00–53)
-    `%w` – Weekday as a decimal number (0–6, where Sunday = 0)
-    `%W` – Week number of the year (Monday as the first day, 00–53)
-    `%x` – Date representation for the current locale
-    `%X` – Time representation for the current locale
-    `%y` – Year without century as a two-digit number (00–99)
-    `%Y` – Year with century as a decimal number
-    `%Z` – Time zone name or abbreviation
-    `%%` – A literal percent sign
-*/
 char *getFormattedCurrentDateTime()
 {
 
