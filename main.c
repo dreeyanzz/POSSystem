@@ -126,54 +126,53 @@ void LogInPage(User *userData)
 
             printf("Log in\n");
             printf("Current Datetime: %s\n", getFormattedCurrentDateTime());
-            printf("Press %s to initiate login.\n", ansi_colorize("[enter]", (ANSI_SGR[]){ANSI_BG_WHITE, ANSI_FG_GREEN, ANSI_BOLD}, 3));
-            printf("Press %s, %s, or %s to move.\n", ansi_colorize("[tab]", (ANSI_SGR[]){ANSI_BG_WHITE, ANSI_FG_GREEN, ANSI_BOLD}, 3),
-                   ansi_colorize("[up arrow]", (ANSI_SGR[]){ANSI_BG_WHITE, ANSI_FG_GREEN, ANSI_BOLD}, 3),
-                   ansi_colorize("[down arrow]", (ANSI_SGR[]){ANSI_BG_WHITE, ANSI_FG_GREEN, ANSI_BOLD}, 3));
-            printf("Press %s to show, or hide password at the current cursor.\n", ansi_colorize("[=]", (ANSI_SGR[]){ANSI_BG_WHITE, ANSI_FG_GREEN, ANSI_BOLD}, 3));
-            printf("Press %s to exit.\n\n", ansi_colorize("[esc]", (ANSI_SGR[]){ANSI_BG_WHITE, ANSI_FG_GREEN, ANSI_BOLD}, 3));
+            printf("Press [enter] to initiate login.\n");
+            printf("Press [tab], [up arrow], or [down arrow] to move.\n");
+            printf("Press [=] to show, or hide password at the current cursor.\n");
+            printf("Press [esc] to exit.\n\n");
 
             for (int i = 0; i < numberOfFields; i++)
             {
+                FieldType currentFieldType = fields[i].type;
+
                 (i == cursor) ? printf("%s", coloredCusor()) : printf("  ");
 
-                switch (fields[i].type)
+                switch (currentFieldType)
                 {
                 case PasswordField_Type:
                 {
+                    PasswordField currentPasswordField = fields[i].data.passwordField;
+                    bool showPassword = currentPasswordField.showPassword;
 
-                    if (fields[i].data.passwordField.showPassword)
-                        printf("%s: %s", fields[i].data.passwordField.displayName, *fields[i].data.passwordField.var);
+                    if (showPassword)
+                        printf("%s: %s", currentPasswordField.displayName, *currentPasswordField.var);
                     else
                     {
-
-                        size_t stringLength = strlen(*fields[i].data.passwordField.var);
-
-                        printf("%s: ", fields[i].data.passwordField.displayName);
-
+                        size_t stringLength = strlen(*currentPasswordField.var);
+                        printf("%s: ", currentPasswordField.displayName);
                         for (size_t i = 0; i < stringLength; i++)
                             printf("*");
                     }
-
-                    break;
                 }
+                break;
+
+                case TextField_Type:
+                {
+                    TextField currentTextField = fields[i].data.textField;
+
+                    printf("%s: %s", currentTextField.displayName, *currentTextField.var);
+                }
+                break;
 
                 default:
-                {
-                    printf("%s: %s", fields[i].data.textField.displayName,
-                           *fields[i].data.textField.var);
-
                     break;
                 }
-                }
-                if ((i == cursor) && (fields[cursor].type != BoolField_Type))
+                if ((i == cursor) && (currentFieldType != BoolField_Type))
                     printf("%s", ansi_colorize(" ", (ANSI_SGR[]){ANSI_BG_WHITE}, 1));
                 printf("\n");
             }
 
             KeyboardKey key = getKeyPress();
-            char c = mappedAlNum(key);
-            char temp[2] = {c, '\0'};
 
             if (key == KEY_ENTER)
                 break;
@@ -190,52 +189,80 @@ void LogInPage(User *userData)
             {
                 if (fields[cursor].type == PasswordField_Type)
                     fields[cursor].data.passwordField.showPassword = !fields[cursor].data.passwordField.showPassword;
-
-                break;
             }
+            break;
 
             case KEY_TAB:
             case KEY_UP:
-            {
                 cursor == 0 ? cursor = (numberOfFields - 1) : cursor--;
                 break;
-            }
 
             case KEY_DOWN:
-            {
                 cursor == (numberOfFields - 1) ? cursor = 0 : cursor++;
                 break;
-            }
 
             case KEY_BACKSPACE:
             {
                 if (fields[cursor].type == PasswordField_Type || fields[cursor].type == TextField_Type)
                 {
-                    if (strlen(*fields[cursor].data.textField.var) > 0)
+                    Field selectedField = fields[cursor];
+                    FieldType currentFieldType = fields[cursor].type;
+
+                    if (currentFieldType == TextField_Type)
                     {
-                        size_t stringLength = strlen(*fields[cursor].data.textField.var);
-                        (*fields[cursor].data.textField.var)[stringLength - 1] = '\0';
-                        *fields[cursor].data.textField.var = realloc(*fields[cursor].data.textField.var, stringLength);
+                        TextField currentTextField = selectedField.data.textField;
+                        int currentTextFieldStringLength = strlen(*currentTextField.var);
+                        int lastCharIndex = currentTextFieldStringLength - 1;
+
+                        if (currentTextFieldStringLength > 0)
+                        {
+                            (*currentTextField.var)[lastCharIndex] = '\0';
+                            *currentTextField.var = realloc(*currentTextField.var, currentTextFieldStringLength);
+                        }
+                    }
+                    else if (currentFieldType == PasswordField_Type)
+                    {
+                        PasswordField currentPasswordField = selectedField.data.passwordField;
+                        int currentPasswordFieldStringLength = strlen(*currentPasswordField.var);
+                        int lastCharIndex = currentPasswordFieldStringLength - 1;
+
+                        if (currentPasswordFieldStringLength > 0)
+                        {
+                            (*currentPasswordField.var)[lastCharIndex] = '\0';
+                            *currentPasswordField.var = realloc(*currentPasswordField.var, currentPasswordFieldStringLength);
+                        }
                     }
                 }
-
-                break;
             }
+            break;
 
             default:
             {
-                if (fields[cursor].type == PasswordField_Type || fields[cursor].type == TextField_Type)
+                FieldType selectedFieldType = fields[cursor].type;
+                char ch = mappedAlNum(key);
+                char temp[2] = {ch, '\0'};
+
+                if (ch != '\0')
                 {
-                    if (temp[0] != '\0')
+                    if (selectedFieldType == PasswordField_Type)
                     {
-                        size_t stringLength = strlen(*fields[cursor].data.textField.var) + strlen(temp) + 1;
-                        *fields[cursor].data.textField.var = realloc(*fields[cursor].data.textField.var, stringLength);
-                        strcat(*fields[cursor].data.textField.var, temp);
+                        PasswordField passwordField = fields[cursor].data.passwordField;
+
+                        int stringLength = strlen(*passwordField.var) + strlen(temp) + 1;
+                        *passwordField.var = realloc(*passwordField.var, stringLength);
+                        strcat(*passwordField.var, temp);
+                    }
+                    else if (selectedFieldType == TextField_Type)
+                    {
+                        TextField textField = fields[cursor].data.textField;
+
+                        int stringLength = strlen(*textField.var) + strlen(temp) + 1;
+                        *textField.var = realloc(*textField.var, stringLength);
+                        strcat(*textField.var, temp);
                     }
                 }
-
-                break;
             }
+            break;
             }
 
             refreshDelay();
@@ -251,13 +278,11 @@ void LogInPage(User *userData)
                 clearTerminal();
 
                 printf("Log in\n");
-                printf("%s\n", getFormattedCurrentDateTime());
-                printf("Press %s to initiate login.\n", ansi_colorize("[enter]", (ANSI_SGR[]){ANSI_BG_WHITE, ANSI_FG_GREEN, ANSI_BOLD}, 3));
-                printf("Press %s, %s, or %s to move.\n", ansi_colorize("[tab]", (ANSI_SGR[]){ANSI_BG_WHITE, ANSI_FG_GREEN, ANSI_BOLD}, 3),
-                       ansi_colorize("[up arrow]", (ANSI_SGR[]){ANSI_BG_WHITE, ANSI_FG_GREEN, ANSI_BOLD}, 3),
-                       ansi_colorize("[down arrow]", (ANSI_SGR[]){ANSI_BG_WHITE, ANSI_FG_GREEN, ANSI_BOLD}, 3));
-                printf("Press %s to show, or hide password.\n", ansi_colorize("[=]", (ANSI_SGR[]){ANSI_BG_WHITE, ANSI_FG_GREEN, ANSI_BOLD}, 3));
-                printf("Press %s to exit.\n\n", ansi_colorize("[esc]", (ANSI_SGR[]){ANSI_BG_WHITE, ANSI_FG_GREEN, ANSI_BOLD}, 3));
+                printf("Current Datetime: %s\n", getFormattedCurrentDateTime());
+                printf("Press [enter] to initiate login.\n");
+                printf("Press [tab], [up arrow], or [down arrow] to move.\n");
+                printf("Press [=] to show, or hide password at the current cursor.\n");
+                printf("Press [esc] to exit.\n\n");
 
                 KeyboardKey choice = getKeyPressInsensitive();
 
