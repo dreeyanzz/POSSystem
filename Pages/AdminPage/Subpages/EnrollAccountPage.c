@@ -21,8 +21,8 @@ static bool emptyUsername;
 static bool emptyPassword;
 static bool emptyDisplayName;
 
-static int numberOfFields = 4;
-static Field fields[] = {
+static const int numberOfFields = 4;
+static const Field fields[] = {
     {
         .type = TextField_Type,
         .data.textField = {
@@ -359,9 +359,9 @@ void confirmEnrollAccount()
         printf("Are you sure you want to enroll this account? Please review before proceeding.\n");
         printf("Press [y] for yes, [n] for no.\n");
 
-        KeyboardKey key2 = getKeyPressInsensitive();
+        KeyboardKey key = getKeyPressInsensitive();
 
-        if (key2 == KEY_y)
+        if (key == KEY_y)
         {
             enrollAccount(username, password,
                           displayName,
@@ -372,7 +372,7 @@ void confirmEnrollAccount()
             displayName[0] = '\0';
             break;
         }
-        else if (key2 == KEY_n)
+        else if (key == KEY_n)
             break;
 
         refreshDelay();

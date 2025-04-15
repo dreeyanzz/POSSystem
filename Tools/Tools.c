@@ -119,13 +119,25 @@ KeyboardKey getKeyPress(void)
         switch (ext)
         {
         case 72:
-            return KEY_UP; // Up arrow
+            return KEY_UP;
         case 80:
-            return KEY_DOWN; // Down arrow
+            return KEY_DOWN;
         case 75:
-            return KEY_LEFT; // Left arrow
+            return KEY_LEFT;
         case 77:
-            return KEY_RIGHT; // Right arrow
+            return KEY_RIGHT;
+        case 71:
+            return KEY_HOME;
+        case 79:
+            return KEY_END;
+        case 73:
+            return KEY_PAGEUP;
+        case 81:
+            return KEY_PAGEDOWN;
+        case 82:
+            return KEY_INSERT;
+        case 83:
+            return KEY_DELETE;
         default:
             return KEY_NONE;
         }

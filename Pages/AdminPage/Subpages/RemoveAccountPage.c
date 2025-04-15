@@ -72,6 +72,14 @@ void RemoveAccountPage()
                 selectedEntryIndex == numAccountsDBEntries - 1 ? selectedEntryIndex = 0 : selectedEntryIndex++;
                 break;
 
+            case KEY_HOME:
+                selectedEntryIndex = 0;
+                break;
+
+            case KEY_END:
+                selectedEntryIndex = numAccountsDBEntries - 1;
+                break;
+
             default:
                 break;
             }
