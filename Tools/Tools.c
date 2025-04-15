@@ -379,7 +379,6 @@ void printRow(int columnWidth, int count, ...)
         printCentered(currentString, columnWidth);
         printf("|");
     }
-    printf("\n");
 
     va_end(args);
 }

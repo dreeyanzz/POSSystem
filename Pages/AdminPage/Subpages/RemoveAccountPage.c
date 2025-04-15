@@ -149,6 +149,7 @@ void showAccountsDBEntries()
              "Display Name",
              "Status",
              "Identifier");
+    printf("\n");
     ansi_colorize_end();
     for (int i = toShowStartIndex; i <= toShowEndIndex; i++)
     {
@@ -171,6 +172,7 @@ void showAccountsDBEntries()
                  entry.displayName,
                  entry.accountType == admin ? "admin" : "user",
                  entry.identifier);
+        printf("\n");
 
         ansi_colorize_end();
     }

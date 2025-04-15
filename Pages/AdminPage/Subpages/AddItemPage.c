@@ -58,8 +58,11 @@ void AddItemPage(void)
         printf("Press [esc] to go back.\n");
         printf("\n");
 
-        char buffer[1024];
+        bool emptyItemName = (itemName[0] == '\0');
+        bool emptyIdentifier = (identifier[0] == '\0');
         hasExisted = false;
+
+        char buffer[1024];
         rewind(itemsDatabase);                               // Reset file pointer
         fgets(buffer, sizeof(buffer), itemsDatabase);        // Skip header
         while (fgets(buffer, sizeof(buffer), itemsDatabase)) // Scan every line of items.csv
@@ -85,14 +88,16 @@ void AddItemPage(void)
 
             case TextField_Type:
             {
-                printf("%s: %s", fields[i].data.textField.displayName,
+                printf("%s: %s",
+                       fields[i].data.textField.displayName,
                        *fields[i].data.textField.var);
                 break;
             }
 
             case NumberField_Type:
             {
-                printf("%s: %d", fields[i].data.textField.displayName,
+                printf("%s: %d",
+                       fields[i].data.textField.displayName,
                        *fields[i].data.numberField.var);
                 break;
             }
@@ -109,9 +114,9 @@ void AddItemPage(void)
         printf("\n");
         if (hasExisted)
             printf("This identifer already exists. Please use another identifier.\n");
-        if (itemName[0] == '\0')
+        if (emptyItemName)
             printf("Item name cannot be empty.\n");
-        if (identifier[0] == '\0')
+        if (emptyIdentifier)
             printf("Item identifer cannot be empty.\n");
         ansi_colorize_end();
 
@@ -122,16 +127,14 @@ void AddItemPage(void)
         if (key == KEY_ENTER)
         {
 
-            if (itemName[0] != '\0' && identifier[0] != '\0' && hasExisted == false)
+            if (!emptyItemName && !emptyIdentifier && !hasExisted)
             {
                 while (true)
                 {
 
                     clearTerminal();
 
-                    printf("Add Item Page\n");
-                    printf("Current Datetime: %s\n", getFormattedCurrentDateTime());
-                    printf("Press [esc] to go back.\n");
+                    pageHeader();
                     printf("\n");
 
                     printf("Press [enter] to confirm.\n");
@@ -211,18 +214,22 @@ void AddItemPage(void)
             case NumberField_Type:
             {
 
-                *fields[cursor].data.numberField.var /= 10;
+                NumberField selectedNumberField = fields[cursor].data.numberField;
+
+                *selectedNumberField.var /= 10;
 
                 break;
             }
 
             case TextField_Type:
             {
-                if (strlen(*fields[cursor].data.textField.var) > 0)
+                TextField selectedTextField = fields[cursor].data.textField;
+
+                if (strlen(*selectedTextField.var) > 0)
                 {
-                    size_t stringLength = strlen(*fields[cursor].data.textField.var);
-                    (*fields[cursor].data.textField.var)[stringLength - 1] = '\0';
-                    (*fields[cursor].data.textField.var) = realloc((*fields[cursor].data.textField.var), stringLength);
+                    size_t stringLength = strlen(*selectedTextField.var);
+                    (*selectedTextField.var)[stringLength - 1] = '\0';
+                    (*selectedTextField.var) = realloc((*selectedTextField.var), stringLength);
                 }
                 break;
             }
@@ -241,19 +248,26 @@ void AddItemPage(void)
             {
             case NumberField_Type:
             {
+                NumberField selectedNumberField = fields[cursor].data.numberField;
+
                 if (c >= '0' && c <= '9')
-                    *fields[cursor].data.numberField.var = ((*fields[cursor].data.numberField.var) * 10) + (c - '0');
+                    *selectedNumberField.var = ((*selectedNumberField.var) * 10) + (c - '0');
 
                 break;
             }
 
             case TextField_Type:
             {
-                if (temp[0] != '\0')
+
+                bool emptyTemp = temp[0] == '\0';
+
+                if (!emptyTemp)
                 {
-                    size_t stringLength = strlen(*fields[cursor].data.textField.var) + strlen(temp) + 1;
-                    *fields[cursor].data.textField.var = realloc(*fields[cursor].data.textField.var, stringLength);
-                    strcat(*fields[cursor].data.textField.var, temp);
+                    TextField selectedTextField = fields[cursor].data.textField;
+
+                    size_t stringLength = strlen(*selectedTextField.var) + strlen(temp) + 1;
+                    *selectedTextField.var = realloc(*selectedTextField.var, stringLength);
+                    strcat(*selectedTextField.var, temp);
                 }
                 break;
             }

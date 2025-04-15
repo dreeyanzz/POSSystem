@@ -1,15 +1,24 @@
 #include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
+#include "Tools/Tools.c"
 
 int main(void)
 {
 
+    srand(time(NULL));
+
     int numberOfEntries = 50;
+    int minPrice = 10;
+    int maxPrice = 50;
 
     FILE *itemsDB = fopen("Databases/items.csv", "a+");
 
     for (int i = 0; i < numberOfEntries; i++)
     {
-        fprintf(itemsDB, "Item Name %d|Item Identifier %d|Item Price %d\n", i, i, i);
+        int randomNumber = minPrice + rand() % (maxPrice - minPrice + 1);
+
+        fprintf(itemsDB, "Item Name %d|%d|%d\n", i, generateItemIdentifier(), randomNumber);
     }
 
     return 0;

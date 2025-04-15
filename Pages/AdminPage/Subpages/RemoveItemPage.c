@@ -47,7 +47,12 @@ void RemoveItemPage()
         printf("selectedEntryIndex: %d\n", selectedEntryIndex);
         printf("\n");
 
-        numItemsDBEntries == 0 ? printf("No items yet. Add some items to remove.\n") : showItemsDBEntries();
+        if (numItemsDBEntries == 0)
+        {
+            printf("No items yet. Add some items to remove.\n");
+            goto last;
+        }
+        showItemsDBEntries();
 
         KeyboardKey key = getKeyPressInsensitive();
 
@@ -70,6 +75,8 @@ void RemoveItemPage()
             default:
                 break;
             }
+
+    last:
 
         for (int i = 0; i < numItemsDBEntries; i++)
         {
@@ -142,6 +149,7 @@ void showItemsDBEntries()
              "Item Name",
              "Item Identifier",
              "Item Price");
+    printf("\n");
     ansi_colorize_end();
     for (int i = toShowStartIndex; i <= toShowEndIndex; i++)
     {
@@ -162,6 +170,7 @@ void showItemsDBEntries()
                  entry.itemName,
                  entry.itemIdentifier,
                  inttoascii(entry.itemPrice));
+        printf("\n");
 
         ansi_colorize_end();
     }

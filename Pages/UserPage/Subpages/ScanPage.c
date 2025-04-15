@@ -46,6 +46,7 @@ void ScanPage()
             printf("No items yet. Please ask an administrator to add some.\n");
             goto last;
         }
+        showItemsDBEntries();
 
         KeyboardKey key = getKeyPressInsensitive();
 
@@ -138,15 +139,13 @@ void showItemsDBEntries()
 {
     printf("  ");
     ansi_colorize_start((ANSI_SGR[]){ANSI_UNDERLINE, ANSI_OVERLINE, ANSI_BOLD}, 3);
-    printf("|");
-    printCentered("Item Name", columnWidth);
-    printf("|");
-    printCentered("Item Identifier", columnWidth);
-    printf("|");
-    printCentered("Item Price", columnWidth);
-    printf("|");
+    printRow(columnWidth, 3,
+             "Item Name",
+             "Item Identifier",
+             "Item Price");
     ansi_colorize_end();
     printf("\n");
+
     for (int i = toShowStartIndex; i <= toShowEndIndex; i++)
     {
         const ItemsDatabaseEntry currentEntry = itemsDBEntries[i];
@@ -161,15 +160,11 @@ void showItemsDBEntries()
 
         if (i == toShowEndIndex)
             ansi_colorize_start((ANSI_SGR[]){ANSI_UNDERLINE}, 1);
-        printf("|");
-        printCentered(currentEntry.itemName, columnWidth);
-        printf("|");
-        printCentered(currentEntry.itemIdentifier, columnWidth);
-        printf("|");
-        printCentered(inttoascii(currentEntry.itemPrice), columnWidth);
-        printf("|");
+        printRow(columnWidth, 3,
+                 currentEntry.itemName,
+                 currentEntry.itemIdentifier,
+                 inttoascii(currentEntry.itemPrice));
         printf("\n");
-
         ansi_colorize_end();
     }
     printf("\n");
