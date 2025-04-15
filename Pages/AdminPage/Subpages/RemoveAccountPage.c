@@ -76,10 +76,26 @@ void RemoveAccountPage()
                 break;
             }
 
+        for (int i = 0; i < numAccountsDBEntries; i++)
+        {
+            free(accountsDBEntries[i].username);
+            free(accountsDBEntries[i].password);
+            free(accountsDBEntries[i].displayName);
+            free(accountsDBEntries[i].identifier);
+        }
         free(accountsDBEntries);
+
         refreshDelay();
     }
 
+    for (int i = 0; i < numAccountsDBEntries; i++)
+    {
+        free(accountsDBEntries[i].username);
+        free(accountsDBEntries[i].password);
+        free(accountsDBEntries[i].displayName);
+        free(accountsDBEntries[i].identifier);
+    }
+    free(accountsDBEntries);
     fclose(accountsDB);
 }
 
@@ -209,6 +225,8 @@ void confirmRemoval()
                 toShowStartIndex--;
             toShowEndIndex--;
             accountsDB = fopen(accountsDatabasePath, "a+");
+
+            free(accountIdentifier);
 
             break;
         }
