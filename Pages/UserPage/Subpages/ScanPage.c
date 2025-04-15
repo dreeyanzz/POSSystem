@@ -36,16 +36,16 @@ void ScanPage()
         itemsDBEntries = (ItemsDatabaseEntry *)malloc(numItemsDBEntries * sizeof(ItemsDatabaseEntry));
         fillItemsDBEntries();
 
-        numItemsToShow = numItemsDBEntries >= maxEntriesToShow ? maxEntriesToShow : numItemsDBEntries;
-        toShowEndIndex = toShowStartIndex + numItemsToShow - 1;
-
         adjustEntriesToShow();
 
         pageHeader();
         printf("selectedEntryIndex: %d\n", selectedEntryIndex);
         printf("\n");
-
-        numItemsDBEntries == 0 ? printf("No items yet. Please ask an administrator to add some.\n") : showItemsDBEntries();
+        if (numItemsDBEntries == 0)
+        {
+            printf("No items yet. Please ask an administrator to add some.\n");
+            goto last;
+        }
 
         KeyboardKey key = getKeyPressInsensitive();
 
@@ -66,7 +66,7 @@ void ScanPage()
             default:
                 break;
             }
-
+    last:
         for (int i = 0; i < numItemsDBEntries; i++)
         {
             free(itemsDBEntries[i].itemName);
@@ -112,6 +112,10 @@ void fillItemsDBEntries()
 
 void adjustEntriesToShow()
 {
+
+    numItemsToShow = numItemsDBEntries >= maxEntriesToShow ? maxEntriesToShow : numItemsDBEntries;
+    toShowEndIndex = toShowStartIndex + numItemsToShow - 1;
+
     if (selectedEntryIndex > toShowEndIndex)
     {
         while (selectedEntryIndex > toShowEndIndex)

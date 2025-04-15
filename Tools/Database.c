@@ -6,18 +6,18 @@
 #include "Database.h"
 
 const char *databasesPath = "Databases";
-char accountsDatabasePath[256];
-char itemsDatabasePath[256];
-char isOpenDatabasePath[256];
+char accountsDatabasePath[256]; // Databases/accounts.csv
+char itemsDatabasePath[256];    // Databases/items.csv
+char isOpenDatabasePath[256];   // Databases/isOpen.csv
 const char *accountsDatabaseName = "accounts.csv";
 const char *itemsDatabaseName = "items.csv";
 const char *isOpenDatabaseName = "isOpen.csv";
 
 void initializeDatabases()
 {
-    snprintf(accountsDatabasePath, sizeof(accountsDatabasePath), "%s/%s", databasesPath, accountsDatabaseName);
-    snprintf(itemsDatabasePath, sizeof(itemsDatabasePath), "%s/%s", databasesPath, itemsDatabaseName);
-    snprintf(isOpenDatabasePath, sizeof(isOpenDatabasePath), "%s/%s", databasesPath, isOpenDatabaseName);
+    snprintf(accountsDatabasePath, sizeof(accountsDatabasePath), "%s/%s", databasesPath, accountsDatabaseName); // Databases/accounts.csv
+    snprintf(itemsDatabasePath, sizeof(itemsDatabasePath), "%s/%s", databasesPath, itemsDatabaseName);          // Databases/items.csv
+    snprintf(isOpenDatabasePath, sizeof(isOpenDatabasePath), "%s/%s", databasesPath, isOpenDatabaseName);       // Databases/isOpen.csv
 
     createFolderIfNotExists(databasesPath);
     InitializeAccountsDatabase();

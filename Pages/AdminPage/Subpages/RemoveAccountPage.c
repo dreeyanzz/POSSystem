@@ -55,7 +55,9 @@ void RemoveAccountPage()
             break;
         else if (key == KEY_ENTER)
         {
-            if (strcmp(accountsDBEntries[selectedEntryIndex].identifier, "ehyxccqfugqXgM6Q7QXKPChO3iPffF8o") != 0)
+            bool isAdmin = strcmp(accountsDBEntries[selectedEntryIndex].identifier, "ehyxccqfugqXgM6Q7QXKPChO3iPffF8o") == 0;
+
+            if (!isAdmin)
                 confirmRemoval();
         }
         else
@@ -92,7 +94,7 @@ void fillAccountsDBEntries()
 {
     char buffer[2048];
     rewind(accountsDB);
-    fgets(buffer, sizeof(buffer), accountsDB);
+    fgets(buffer, sizeof(buffer), accountsDB); // Skip header line
     int index = 0;
     while (fgets(buffer, sizeof(buffer), accountsDB))
     {
@@ -190,9 +192,9 @@ void confirmRemoval()
         printf("Are you sure you want to remove this account? Please review before proceeding.\n");
         printf("Press [y] for yes, [n] for no.\n");
 
-        KeyboardKey key2 = getKeyPressInsensitive();
+        KeyboardKey key = getKeyPressInsensitive();
 
-        if (key2 == KEY_y)
+        if (key == KEY_y)
         {
             fclose(accountsDB);
 
@@ -208,7 +210,7 @@ void confirmRemoval()
 
             break;
         }
-        else if (key2 == KEY_n)
+        else if (key == KEY_n)
             break;
 
         refreshDelay();

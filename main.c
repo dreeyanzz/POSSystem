@@ -81,11 +81,8 @@ int main(void)
 
 void LogInPage(User *userData)
 {
-    char *username = (char *)malloc(sizeof(char));
-    char *password = (char *)malloc(sizeof(char));
-
-    username[0] = '\0';
-    password[0] = '\0';
+    char *username;
+    char *password;
 
     size_t numberOfFields = 2;
     Field fields[] = {
