@@ -39,6 +39,11 @@ char *ansi_colorize(const char *string, ANSI_SGR configurations[], size_t numCon
     return configuredString;
 }
 
+void printWhiteHighlight()
+{
+    printf("%s", ansi_colorize(" ", (ANSI_SGR[]){ANSI_BG_WHITE}, 1));
+}
+
 void ansi_colorize_start(ANSI_SGR configurations[], size_t numConfigs)
 {
     char prefix[64];

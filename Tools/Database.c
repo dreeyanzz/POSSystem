@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdarg.h>
 #include "Tools.h"
 #include "Database.h"
 
@@ -59,7 +60,7 @@ void InitializeItemsDatabase()
     {
         itemsDatabase = fopen(itemsDatabasePath, "w");
 
-        fprintf(itemsDatabase, "itemName|identifier|price\n");
+        fprintf(itemsDatabase, "Item Name|Item Identifier|Item Remaining Stocks|Item Price\n");
     }
 
     fclose(itemsDatabase);
@@ -89,7 +90,7 @@ void removeItemsDatabaseEntryByIdentifier(const char *identifier)
     FILE *itemsDatabase = fopen(itemsDatabasePath, "r");
     FILE *newItemsDatabase = fopen(newItemsDatabasePath, "w");
 
-    fprintf(newItemsDatabase, "itemName|identifier|price\n"); // header
+    fprintf(newItemsDatabase, "Item Name|Item Identifier|Item Remaining Stocks|Item Price\n"); // header
 
     rewind(itemsDatabase);
     char buffer[1024];
@@ -98,10 +99,11 @@ void removeItemsDatabaseEntryByIdentifier(const char *identifier)
     {
         char *dbItemName = strtok(buffer, "|");
         char *dbItemIdentifier = strtok(NULL, "|");
+        char *dbItemRemainingStocks = strtok(NULL, "|");
         char *dbItemPrice = strtok(NULL, "|");
 
         if (strcmp(identifier, dbItemIdentifier) != 0)
-            fprintf(newItemsDatabase, "%s|%s|%s", dbItemName, dbItemIdentifier, dbItemPrice);
+            fprintf(newItemsDatabase, "%s|%s|%s|%s", dbItemName, dbItemIdentifier, dbItemRemainingStocks, dbItemPrice);
     }
 
     fclose(itemsDatabase);
@@ -111,6 +113,71 @@ void removeItemsDatabaseEntryByIdentifier(const char *identifier)
     rename(newItemsDatabasePath, itemsDatabasePath);
 
     free(newItemsDatabasePath);
+}
+
+void changeItemPropertyByIdentifier(const char *identifier, ItemsEntryOperationType operationType, ...)
+{
+    va_list args;
+    va_start(args, operationType);
+
+    const char *tempItemsDatabaseName = "temp.csv";
+
+    size_t allocatedSize = strlen(databasesPath) + 1 /* slash */ + strlen(tempItemsDatabaseName) + 1 /* null terminator */;
+    char *newItemsDatabasePath = malloc(allocatedSize);
+    snprintf(newItemsDatabasePath, allocatedSize, "%s/%s", databasesPath, tempItemsDatabaseName);
+
+    FILE *itemsDatabase = fopen(itemsDatabasePath, "r");
+    FILE *newItemsDatabase = fopen(newItemsDatabasePath, "w");
+
+    fprintf(newItemsDatabase, "Item Name|Item Identifier|Item Remaining Stocks|Item Price\n"); // header
+
+    rewind(itemsDatabase);
+    char buffer[1024];
+    fgets(buffer, sizeof(buffer), itemsDatabase);
+    while (fgets(buffer, sizeof(buffer), itemsDatabase))
+    {
+        buffer[strcspn(buffer, "\n")] = '\0';
+
+        char *dbItemName = strtok(buffer, "|");
+        char *dbItemIdentifier = strtok(NULL, "|");
+        char *dbItemRemainingStocks = strtok(NULL, "|");
+        char *dbItemPrice = strtok(NULL, "|");
+
+        if (strcmp(identifier, dbItemIdentifier) == 0)
+        {
+            switch (operationType)
+            {
+            case CHANGE_ITEM_NAME:
+                fprintf(newItemsDatabase, "%s|%s|%s|%s\n", va_arg(args, char *), dbItemIdentifier, dbItemRemainingStocks, dbItemPrice);
+                break;
+
+            case CHANGE_ITEM_IDENTIFIER:
+                fprintf(newItemsDatabase, "%s|%s|%s|%s\n", dbItemName, va_arg(args, char *), dbItemRemainingStocks, dbItemPrice);
+                break;
+
+            case CHANGE_ITEM_STOCKS:
+                fprintf(newItemsDatabase, "%s|%s|%d|%s\n", dbItemName, dbItemIdentifier, va_arg(args, int), dbItemPrice);
+                break;
+
+            case CHANGE_ITEM_PRICE:
+                fprintf(newItemsDatabase, "%s|%s|%s|%d\n", dbItemName, dbItemIdentifier, dbItemRemainingStocks, va_arg(args, int));
+                break;
+            }
+
+            continue;
+        }
+        fprintf(newItemsDatabase, "%s|%s|%s|%s\n", dbItemName, dbItemIdentifier, dbItemRemainingStocks, dbItemPrice);
+    }
+
+    fclose(itemsDatabase);
+    fclose(newItemsDatabase);
+
+    remove(itemsDatabasePath);
+    rename(newItemsDatabasePath, itemsDatabasePath);
+
+    free(newItemsDatabasePath);
+
+    va_end(args);
 }
 
 void removeAccountDatabaseEntryByIdentifier(const char *identifier)

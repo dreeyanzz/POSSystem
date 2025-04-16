@@ -5,6 +5,13 @@
 #include "../../../Tools/FieldType.h"
 #include "../../../Tools/Database.h"
 
+typedef struct
+{
+    char *operationName;
+    ItemsEntryOperationType operationType;
+    void *operationFunc;
+} OperationsFieldEntry;
+
 static const char *pageTitle = "Item Operations Page";
 static const int numColumns = 4;
 static const int columnWidth = 35;
@@ -15,7 +22,12 @@ static void fillItemsDBEntries();
 static void adjustEntriesToShow();
 static void showItemsDBEntries();
 
-static void confirmRemoval();
+static void showOperations();
+
+static void removeItemEntry();
+static void changeItemName();
+static void changeStocks();
+void changeItemPrice();
 
 static FILE *itemsDB;
 static ItemsDatabaseEntry *itemsDBEntries;
@@ -26,6 +38,31 @@ static int toShowStartIndex = 0;
 static int toShowEndIndex;
 
 static int selectedEntryIndex = 0;
+static int selectedOperationIndex = 0;
+
+const int numOperations = 4;
+static const OperationsFieldEntry operations[] = {
+    {
+        "Remove Item Entry",
+        REMOVE_ITEM_ENTRY,
+        &removeItemEntry,
+    },
+    {
+        "Change Item Name",
+        CHANGE_ITEM_NAME,
+        &changeItemName,
+    },
+    {
+        "Change Stocks",
+        CHANGE_ITEM_STOCKS,
+        &changeStocks,
+    },
+    {
+        "Change Price",
+        CHANGE_ITEM_PRICE,
+        &changeItemPrice,
+    },
+};
 
 void ItemOperationsPage()
 {
@@ -61,7 +98,7 @@ void ItemOperationsPage()
         if (key == KEY_ESCAPE)
             break;
         else if (key == KEY_ENTER)
-            confirmRemoval();
+            showOperations();
         else
             switch (key)
             {
@@ -191,8 +228,9 @@ void showItemsDBEntries()
     printf("\n");
 }
 
-void confirmRemoval()
+void showOperations()
 {
+
     while (true)
     {
         clearTerminal();
@@ -202,30 +240,262 @@ void confirmRemoval()
         printf("\n");
 
         showItemsDBEntries();
+        printf("\n");
 
-        printf("Are you sure you want to remove this item? Please review before proceeding.\n");
-        printf("Press [y] for yes, [n] for no.\n");
+        printf("Select an operation\n");
+        for (int i = 0; i < numOperations; i++)
+        {
+            OperationsFieldEntry currentOperation = operations[i];
 
-        KeyboardKey key2 = getKeyPressInsensitive();
+            i == selectedOperationIndex ? printColoredCursor() : printf("  ");
 
-        if (key2 == KEY_y)
+            printf("%s\n", currentOperation.operationName);
+        }
+
+        KeyboardKey key = getKeyPressInsensitive();
+
+        if (key == KEY_ENTER)
+        {
+            ((void (*)(void))operations[selectedOperationIndex].operationFunc)();
+            break;
+        }
+        else if (key == KEY_ESCAPE)
+            break;
+        else
+            switch (key)
+            {
+            case KEY_TAB:
+            case KEY_DOWN:
+                selectedOperationIndex == numOperations - 1 ? selectedOperationIndex = 0 : selectedOperationIndex++;
+                break;
+
+            case KEY_UP:
+                selectedOperationIndex == 0 ? selectedOperationIndex = numOperations - 1 : selectedOperationIndex--;
+                break;
+            }
+
+        refreshDelay();
+    }
+
+    selectedOperationIndex = 0;
+}
+
+void removeItemEntry()
+{
+    fclose(itemsDB);
+
+    char *itemIdentifier = strdup(itemsDBEntries[selectedEntryIndex].itemIdentifier);
+
+    removeItemsDatabaseEntryByIdentifier(itemIdentifier);
+    if (selectedEntryIndex > 0)
+        selectedEntryIndex--;
+    if (toShowStartIndex > 0)
+        toShowStartIndex--;
+    toShowEndIndex--;
+    itemsDB = fopen(itemsDatabasePath, "a+");
+}
+
+void changeItemName()
+{
+    char *newItemName = (char *)malloc(sizeof(char));
+    newItemName[0] = '\0';
+
+    while (true)
+    {
+        clearTerminal();
+
+        pageHeader();
+        printf("selectedEntryIndex: %d\n", selectedEntryIndex);
+        printf("\n");
+
+        showItemsDBEntries();
+        printf("\n");
+
+        printf("Select an operation\n");
+        for (int i = 0; i < numOperations; i++)
+        {
+            OperationsFieldEntry currentOperation = operations[i];
+
+            i == selectedOperationIndex ? printColoredCursor() : printf("  ");
+
+            printf("%s\n", currentOperation.operationName);
+        }
+        printf("\n");
+
+        printf("Enter new item name: %s", newItemName);
+        printWhiteHighlight();
+        printf("\n");
+
+        KeyboardKey key = getKeyPress();
+        char c = mappedAlNum(key);
+        char temp[2] = {c, '\0'};
+
+        if (key == KEY_ENTER)
         {
             fclose(itemsDB);
-
             char *itemIdentifier = strdup(itemsDBEntries[selectedEntryIndex].itemIdentifier);
-
-            removeItemsDatabaseEntryByIdentifier(itemIdentifier);
-            if (selectedEntryIndex > 0)
-                selectedEntryIndex--;
-            if (toShowStartIndex > 0)
-                toShowStartIndex--;
-            toShowEndIndex--;
+            changeItemPropertyByIdentifier(itemIdentifier, CHANGE_ITEM_NAME, newItemName);
             itemsDB = fopen(itemsDatabasePath, "a+");
 
             break;
         }
-        else if (key2 == KEY_n)
+        else if (key == KEY_ESCAPE)
             break;
+        else
+            switch (key)
+            {
+            case KEY_BACKSPACE:
+                if (strlen(newItemName) > 0)
+                {
+                    size_t stringLength = strlen(newItemName);
+                    newItemName[stringLength - 1] = '\0';
+                    newItemName = realloc(newItemName, stringLength);
+                }
+                break;
+
+            default:
+            {
+                bool emptyTemp = temp[0] == '\0';
+
+                if (!emptyTemp)
+                {
+
+                    int stringLength = strlen(newItemName) + strlen(temp) + 1;
+                    newItemName = realloc(newItemName, stringLength);
+                    strcat(newItemName, temp);
+                }
+            }
+            break;
+            }
+
+        refreshDelay();
+    }
+
+    free(newItemName);
+}
+
+void changeStocks()
+{
+
+    int newNumStocks = 0;
+
+    while (true)
+    {
+
+        clearTerminal();
+
+        pageHeader();
+        printf("selectedEntryIndex: %d\n", selectedEntryIndex);
+        printf("\n");
+
+        showItemsDBEntries();
+        printf("\n");
+
+        printf("Select an operation\n");
+        for (int i = 0; i < numOperations; i++)
+        {
+            OperationsFieldEntry currentOperation = operations[i];
+
+            i == selectedOperationIndex ? printColoredCursor() : printf("  ");
+
+            printf("%s\n", currentOperation.operationName);
+        }
+        printf("\n");
+
+        printf("Enter number of stocks: %d", newNumStocks);
+        printWhiteHighlight();
+        printf("\n");
+
+        KeyboardKey key = getKeyPressInsensitive();
+        char c = mappedAlNum(key);
+
+        if (key == KEY_ENTER)
+        {
+            fclose(itemsDB);
+            char *itemIdentifier = strdup(itemsDBEntries[selectedEntryIndex].itemIdentifier);
+            changeItemPropertyByIdentifier(itemIdentifier, CHANGE_ITEM_STOCKS, newNumStocks);
+            itemsDB = fopen(itemsDatabasePath, "a+");
+
+            free(itemIdentifier);
+            break;
+        }
+        else if (key == KEY_ESCAPE)
+            break;
+        else
+            switch (key)
+            {
+            case KEY_BACKSPACE:
+                newNumStocks /= 10;
+                break;
+
+            default:
+                if (c >= '0' && c <= '9')
+                    newNumStocks = ((newNumStocks) * 10) + (c - '0');
+                break;
+            }
+
+        refreshDelay();
+    }
+}
+
+void changeItemPrice()
+{
+    int newItemPrice = 0;
+
+    while (true)
+    {
+
+        clearTerminal();
+
+        pageHeader();
+        printf("selectedEntryIndex: %d\n", selectedEntryIndex);
+        printf("\n");
+
+        showItemsDBEntries();
+        printf("\n");
+
+        printf("Select an operation\n");
+        for (int i = 0; i < numOperations; i++)
+        {
+            OperationsFieldEntry currentOperation = operations[i];
+
+            i == selectedOperationIndex ? printColoredCursor() : printf("  ");
+
+            printf("%s\n", currentOperation.operationName);
+        }
+        printf("\n");
+
+        printf("Enter number of stocks: %d", newItemPrice);
+        printWhiteHighlight();
+        printf("\n");
+
+        KeyboardKey key = getKeyPressInsensitive();
+        char c = mappedAlNum(key);
+
+        if (key == KEY_ENTER)
+        {
+            fclose(itemsDB);
+            char *itemIdentifier = strdup(itemsDBEntries[selectedEntryIndex].itemIdentifier);
+            changeItemPropertyByIdentifier(itemIdentifier, CHANGE_ITEM_PRICE, newItemPrice);
+            itemsDB = fopen(itemsDatabasePath, "a+");
+
+            free(itemIdentifier);
+            break;
+        }
+        else if (key == KEY_ESCAPE)
+            break;
+        else
+            switch (key)
+            {
+            case KEY_BACKSPACE:
+                newItemPrice /= 10;
+                break;
+
+            default:
+                if (c >= '0' && c <= '9')
+                    newItemPrice = ((newItemPrice) * 10) + (c - '0');
+                break;
+            }
 
         refreshDelay();
     }

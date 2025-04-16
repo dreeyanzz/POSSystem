@@ -38,6 +38,15 @@ typedef struct
     char *identifier;
 } AccountsDatabaseEntry;
 
+typedef enum
+{
+    CHANGE_ITEM_NAME,
+    CHANGE_ITEM_IDENTIFIER,
+    CHANGE_ITEM_STOCKS,
+    CHANGE_ITEM_PRICE,
+    REMOVE_ITEM_ENTRY,
+} ItemsEntryOperationType;
+
 /*
     Initializes all databases
 */
@@ -58,6 +67,7 @@ void AddItemToDatabase(const char *itemName, const char *identifier, const long 
     Checks every line of items.csv, if the passed identifier matches, it deletes that line/entry
 */
 void removeItemsDatabaseEntryByIdentifier(const char *identifier);
+void changeItemPropertyByIdentifier(const char *identifier, ItemsEntryOperationType operationType, ...);
 /*
     Removes an entry of account in accounts.csv by identifier
     Checks every line of accounts.csv, if the passed identifier matches, it deletes that line/entry

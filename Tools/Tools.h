@@ -211,6 +211,7 @@ typedef struct
 // String manipulations
 
 char *ansi_colorize(const char *string, ANSI_SGR configurations[], size_t numConfigs);
+void printWhiteHighlight();
 void ansi_colorize_start(ANSI_SGR configurations[], size_t numConfigs);
 void ansi_colorize_end();
 void printCentered(const char *text, int width);
