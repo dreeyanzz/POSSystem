@@ -216,6 +216,7 @@ void ansi_colorize_start(ANSI_SGR configurations[], size_t numConfigs);
 void ansi_colorize_end();
 void printCentered(const char *text, int width);
 char *inttoascii(int num);
+char *toLowercase(const char *passedString);
 
 // --to be named--
 

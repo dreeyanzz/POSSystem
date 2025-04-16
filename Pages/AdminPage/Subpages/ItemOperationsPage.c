@@ -80,8 +80,6 @@ void ItemOperationsPage()
         numItemsToShow = numItemsDBEntries >= maxEntriesToShow ? maxEntriesToShow : numItemsDBEntries;
         toShowEndIndex = toShowStartIndex + numItemsToShow - 1;
 
-        adjustEntriesToShow();
-
         pageHeader();
         printf("selectedEntryIndex: %d\n", selectedEntryIndex);
         printf("\n");
@@ -91,6 +89,7 @@ void ItemOperationsPage()
             printf("No items yet. Add some items to remove.\n");
             goto last;
         }
+        adjustEntriesToShow();
         showItemsDBEntries();
 
         KeyboardKey key = getKeyPressInsensitive();
@@ -185,6 +184,17 @@ void adjustEntriesToShow()
         while (selectedEntryIndex < toShowStartIndex)
         {
             toShowStartIndex--;
+            toShowEndIndex--;
+        }
+    }
+    if (selectedEntryIndex >= numItemsDBEntries)
+    {
+        while (selectedEntryIndex >= numItemsDBEntries)
+        {
+            if (selectedEntryIndex > 0)
+                selectedEntryIndex--;
+            if (toShowStartIndex > 0)
+                toShowStartIndex--;
             toShowEndIndex--;
         }
     }
@@ -359,7 +369,6 @@ void changeItemName()
 
                 if (!emptyTemp)
                 {
-
                     int stringLength = strlen(newItemName) + strlen(temp) + 1;
                     newItemName = realloc(newItemName, stringLength);
                     strcat(newItemName, temp);

@@ -1,9 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "../../../Tools/Tools.h"
 #include "../../../Tools/FieldType.h"
 #include "../../../Tools/Database.h"
+
+typedef struct
+{
+    ItemsDatabaseEntry entry;
+    int quantity;
+} SelectedItem;
 
 static const int columnWidth = 35;
 static const int maxEntriesToShow = 7;
@@ -15,7 +22,14 @@ static void showItemsDBEntries();
 
 static FILE *itemsDB;
 static ItemsDatabaseEntry *itemsDBEntries;
+static ItemsDatabaseEntry *itemsToShow;
 static int numItemsDBEntries;
+
+static char *itemToSearch;
+static int numSearched;
+
+static SelectedItem *selectedItems;
+static int numSelectedItems;
 
 static int numItemsToShow;
 static int toShowStartIndex = 0;
@@ -27,6 +41,11 @@ void ScanPage()
 {
 
     itemsDB = fopen(itemsDatabasePath, "a+");
+    itemToSearch = (char *)malloc(sizeof(char));
+
+    selectedItems = (SelectedItem *)malloc(sizeof(SelectedItem));
+
+    itemToSearch[0] = '\0';
 
     while (true)
     {
@@ -36,19 +55,50 @@ void ScanPage()
         itemsDBEntries = (ItemsDatabaseEntry *)malloc(numItemsDBEntries * sizeof(ItemsDatabaseEntry));
         fillItemsDBEntries();
 
-        adjustEntriesToShow();
-
         pageHeader();
         printf("selectedEntryIndex: %d\n", selectedEntryIndex);
+        printf("numSelectedItems: %d\n", numSelectedItems);
         printf("\n");
+
         if (numItemsDBEntries == 0)
         {
             printf("No items yet. Please ask an administrator to add some.\n");
             goto last;
         }
+
+        numSearched = 0;
+        for (int i = 0; i < numItemsDBEntries; i++)
+        {
+            ItemsDatabaseEntry currentEntry = itemsDBEntries[i];
+            char *itemName = strdup(currentEntry.itemName);
+
+            if (strstr(toLowercase(itemName), toLowercase(itemToSearch)) != NULL)
+            {
+                numSearched++;
+
+                itemsToShow = realloc(itemsToShow, numSearched * sizeof(ItemsDatabaseEntry));
+
+                itemsToShow[numSearched - 1] = currentEntry;
+            }
+        }
+
+        printf("Search Item: %s", itemToSearch);
+        printWhiteHighlight();
+        printf("\n");
+
+        if (numSearched == 0)
+        {
+            printf("No items matched.\n");
+            goto input;
+        }
+
+        adjustEntriesToShow();
         showItemsDBEntries();
 
+    input:
         KeyboardKey key = getKeyPressInsensitive();
+        char c = mappedAlNum(key);
+        char temp[2] = {c, '\0'};
 
         if (key == KEY_ESCAPE)
             break;
@@ -56,17 +106,87 @@ void ScanPage()
             switch (key)
             {
             case KEY_UP:
-                selectedEntryIndex == 0 ? selectedEntryIndex = numItemsDBEntries - 1 : selectedEntryIndex--;
+                selectedEntryIndex == 0 ? selectedEntryIndex = numSearched - 1 : selectedEntryIndex--;
                 break;
 
             case KEY_TAB:
             case KEY_DOWN:
-                selectedEntryIndex == numItemsDBEntries - 1 ? selectedEntryIndex = 0 : selectedEntryIndex++;
+                selectedEntryIndex == numSearched - 1 ? selectedEntryIndex = 0 : selectedEntryIndex++;
+                break;
+
+            case KEY_ENTER:
+                break;
+
+            case KEY_BACKSPACE:
+                if (strlen(itemToSearch) > 0)
+                {
+                    size_t stringLength = strlen(itemToSearch);
+                    itemToSearch[stringLength - 1] = '\0';
+                    itemToSearch = realloc(itemToSearch, stringLength);
+
+                    selectedEntryIndex = 0;
+                }
+                break;
+
+            case KEY_HOME:
+                selectedEntryIndex = 0;
+                break;
+
+            case KEY_END:
+                selectedEntryIndex = numSearched > 0 ? numSearched - 1 : 0;
                 break;
 
             default:
-                break;
+            {
+                bool emptyTemp = temp[0] == '\0';
+
+                if (!emptyTemp && !isdigit(temp[0]))
+                {
+                    size_t stringLength = strlen(itemToSearch) + strlen(temp) + 1;
+                    itemToSearch = realloc(itemToSearch, stringLength);
+                    strcat(itemToSearch, temp);
+
+                    selectedEntryIndex = 0;
+                }
+                if (c >= '0' && c <= '9')
+                {
+                    ItemsDatabaseEntry selectedEntry = itemsToShow[selectedEntryIndex];
+
+                    bool isSelected = false;
+
+                    int i;
+                    for (i = 0; i < numSelectedItems; i++)
+                    {
+                        SelectedItem currentSelectedItem = selectedItems[i];
+
+                        if (strcmp(selectedEntry.itemIdentifier, currentSelectedItem.entry.itemIdentifier) == 0)
+                        {
+                            isSelected = true;
+                            break;
+                        }
+                    }
+
+                    if (isSelected)
+                        selectedItems[i].quantity = (selectedItems[i].quantity * 10) + (c - '0');
+                    else
+                    {
+                        numSelectedItems++;
+                        selectedItems = realloc(selectedItems, numSelectedItems * sizeof(SelectedItem));
+                        selectedItems[numSelectedItems - 1] = (SelectedItem){
+                            {
+                                .itemName = strdup(selectedEntry.itemName),
+                                .itemIdentifier = strdup(selectedEntry.itemIdentifier),
+                                .numStocks = selectedEntry.numStocks,
+                                .itemPrice = selectedEntry.itemPrice,
+                            },
+                            c - '0',
+                        };
+                    }
+                }
             }
+            break;
+            }
+
     last:
         for (int i = 0; i < numItemsDBEntries; i++)
         {
@@ -115,8 +235,7 @@ void fillItemsDBEntries()
 
 void adjustEntriesToShow()
 {
-
-    numItemsToShow = numItemsDBEntries >= maxEntriesToShow ? maxEntriesToShow : numItemsDBEntries;
+    numItemsToShow = numSearched >= maxEntriesToShow ? maxEntriesToShow : numSearched;
     toShowEndIndex = toShowStartIndex + numItemsToShow - 1;
 
     if (selectedEntryIndex > toShowEndIndex)
@@ -135,23 +254,50 @@ void adjustEntriesToShow()
             toShowEndIndex--;
         }
     }
+    if (selectedEntryIndex >= numSearched)
+    {
+        while (selectedEntryIndex >= numSearched)
+        {
+            if (selectedEntryIndex > 0)
+                selectedEntryIndex--;
+            if (toShowStartIndex > 0)
+                toShowStartIndex--;
+            toShowEndIndex--;
+        }
+    }
 }
 
 void showItemsDBEntries()
 {
     printf("  ");
     ansi_colorize_start((ANSI_SGR[]){ANSI_UNDERLINE, ANSI_OVERLINE, ANSI_BOLD}, 3);
-    printRow(columnWidth, 4,
+    printRow(columnWidth, 5,
              "Item Name",
              "Item Identifier",
              "Remaining Stocks",
-             "Item Price");
+             "Item Price",
+             "Quantity");
     ansi_colorize_end();
     printf("\n");
 
     for (int i = toShowStartIndex; i <= toShowEndIndex; i++)
     {
-        const ItemsDatabaseEntry currentEntry = itemsDBEntries[i];
+        const ItemsDatabaseEntry currentEntry = itemsToShow[i];
+
+        bool isSelected = false;
+
+        int j;
+        SelectedItem currentSelectedItem;
+        for (j = 0; j < numSelectedItems; j++)
+        {
+            currentSelectedItem = selectedItems[j];
+
+            if (strcmp(currentEntry.itemIdentifier, currentSelectedItem.entry.itemIdentifier) == 0)
+            {
+                isSelected = true;
+                break;
+            }
+        }
 
         if (i == selectedEntryIndex)
         {
@@ -163,11 +309,12 @@ void showItemsDBEntries()
 
         if (i == toShowEndIndex)
             ansi_colorize_start((ANSI_SGR[]){ANSI_UNDERLINE}, 1);
-        printRow(columnWidth, 4,
+        printRow(columnWidth, 5,
                  currentEntry.itemName,
                  currentEntry.itemIdentifier,
                  inttoascii(currentEntry.numStocks),
-                 inttoascii(currentEntry.itemPrice));
+                 inttoascii(currentEntry.itemPrice),
+                 inttoascii(isSelected ? currentSelectedItem.quantity : 0));
         printf("\n");
         ansi_colorize_end();
     }

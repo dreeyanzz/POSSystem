@@ -100,6 +100,21 @@ char *inttoascii(int num)
     return str;
 }
 
+char *toLowercase(const char *passedString)
+{
+    int length = strlen(passedString);
+    char *lowercased = malloc(length + 1); // +1 for null terminator
+
+    if (!lowercased)
+        return NULL; // Check malloc success
+
+    for (int i = 0; i < length; i++)
+        lowercased[i] = tolower((unsigned char)passedString[i]);
+
+    lowercased[length] = '\0';
+    return lowercased;
+}
+
 char *coloredCusor()
 {
     return ansi_colorize("->", (ANSI_SGR[]){ANSI_FG_GREEN}, 1);
