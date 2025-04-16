@@ -47,6 +47,11 @@ void RemoveAccountPage()
         printf("selectedEntryIndex: %d\n", selectedEntryIndex);
         printf("\n");
 
+        if (numAccountsDBEntries == 0)
+        {
+            printf("No accounts yet. Add some accounts to remove.\n");
+            goto last;
+        }
         showAccountsDBEntries();
 
         KeyboardKey key = getKeyPressInsensitive();
@@ -84,6 +89,7 @@ void RemoveAccountPage()
                 break;
             }
 
+    last:
         for (int i = 0; i < numAccountsDBEntries; i++)
         {
             free(accountsDBEntries[i].username);

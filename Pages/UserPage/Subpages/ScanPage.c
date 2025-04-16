@@ -99,11 +99,13 @@ void fillItemsDBEntries()
 
         char *dbItemName = strtok(buffer, "|");
         char *dbItemIdentifer = strtok(NULL, "|");
+        char *dbNumStocks = strtok(NULL, "|");
         char *dbItemPrice = strtok(NULL, "|");
 
         itemsDBEntries[index] = (ItemsDatabaseEntry){
             .itemName = strdup(dbItemName),
             .itemIdentifier = strdup(dbItemIdentifer),
+            .numStocks = atoi(dbNumStocks),
             .itemPrice = atoi(dbItemPrice),
         };
 
@@ -139,9 +141,10 @@ void showItemsDBEntries()
 {
     printf("  ");
     ansi_colorize_start((ANSI_SGR[]){ANSI_UNDERLINE, ANSI_OVERLINE, ANSI_BOLD}, 3);
-    printRow(columnWidth, 3,
+    printRow(columnWidth, 4,
              "Item Name",
              "Item Identifier",
+             "Remaining Stocks",
              "Item Price");
     ansi_colorize_end();
     printf("\n");
@@ -160,9 +163,10 @@ void showItemsDBEntries()
 
         if (i == toShowEndIndex)
             ansi_colorize_start((ANSI_SGR[]){ANSI_UNDERLINE}, 1);
-        printRow(columnWidth, 3,
+        printRow(columnWidth, 4,
                  currentEntry.itemName,
                  currentEntry.itemIdentifier,
+                 inttoascii(currentEntry.numStocks),
                  inttoascii(currentEntry.itemPrice));
         printf("\n");
         ansi_colorize_end();

@@ -25,7 +25,8 @@ typedef struct
 {
     char *itemName;
     char *itemIdentifier;
-    int itemPrice;
+    long numStocks;
+    long itemPrice;
 } ItemsDatabaseEntry;
 
 typedef struct
@@ -50,7 +51,7 @@ void enrollAccount(const char *username, const char *password, const char *displ
 /* Initializes/prepares items.csv */
 void InitializeItemsDatabase();
 /* Adds an entry into the items.csv */
-void AddItemToDatabase(const char *itemName, const char *identifier, const long price);
+void AddItemToDatabase(const char *itemName, const char *identifier, const long numStocks, const long price);
 
 /*
     Removes an entry of item in items.csv by identifier

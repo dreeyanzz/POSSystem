@@ -65,7 +65,7 @@ void InitializeItemsDatabase()
     fclose(itemsDatabase);
 }
 
-void AddItemToDatabase(const char *itemName, const char *identifier, const long price)
+void AddItemToDatabase(const char *itemName, const char *identifier, const long numStocks, const long price)
 {
     FILE *itemsDatabase = fopen(itemsDatabasePath, "a");
     if (itemsDatabase == NULL)
@@ -73,7 +73,7 @@ void AddItemToDatabase(const char *itemName, const char *identifier, const long 
         initializeDatabases();
     }
 
-    fprintf(itemsDatabase, "%s|%s|%d\n", itemName, identifier, price);
+    fprintf(itemsDatabase, "%s|%s|%d|%d\n", itemName, identifier, numStocks, price);
 
     fclose(itemsDatabase);
 }

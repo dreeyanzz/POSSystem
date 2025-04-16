@@ -5,6 +5,8 @@
 #include "../../../Tools/FieldType.h"
 #include "../../../Tools/Database.h"
 
+static const char *pageTitle = "Item Operations Page";
+static const int numColumns = 4;
 static const int columnWidth = 35;
 static const int maxEntriesToShow = 7;
 
@@ -25,7 +27,7 @@ static int toShowEndIndex;
 
 static int selectedEntryIndex = 0;
 
-void RemoveItemPage()
+void ItemOperationsPage()
 {
 
     itemsDB = fopen(itemsDatabasePath, "a+");
@@ -72,6 +74,14 @@ void RemoveItemPage()
                 selectedEntryIndex == numItemsDBEntries - 1 ? selectedEntryIndex = 0 : selectedEntryIndex++;
                 break;
 
+            case KEY_HOME:
+                selectedEntryIndex = 0;
+                break;
+
+            case KEY_END:
+                selectedEntryIndex = numItemsDBEntries - 1;
+                break;
+
             default:
                 break;
             }
@@ -92,7 +102,7 @@ void RemoveItemPage()
 
 void pageHeader()
 {
-    printf("Scan Page\n");
+    printf("%s\n", pageTitle);
     printf("Current Datetime: %s\n", getFormattedCurrentDateTime());
     printf("Press [esc] to go back.\n");
 }
@@ -109,11 +119,13 @@ void fillItemsDBEntries()
 
         char *dbItemName = strtok(buffer, "|");
         char *dbItemIdentifer = strtok(NULL, "|");
+        char *dbNumStocks = strtok(NULL, "|");
         char *dbItemPrice = strtok(NULL, "|");
 
         itemsDBEntries[index] = (ItemsDatabaseEntry){
             .itemName = strdup(dbItemName),
             .itemIdentifier = strdup(dbItemIdentifer),
+            .numStocks = atoi(dbNumStocks),
             .itemPrice = atoi(dbItemPrice),
         };
 
@@ -145,9 +157,10 @@ void showItemsDBEntries()
 {
     printf("  ");
     ansi_colorize_start((ANSI_SGR[]){ANSI_UNDERLINE, ANSI_OVERLINE, ANSI_BOLD}, 3);
-    printRow(columnWidth, 3,
+    printRow(columnWidth, numColumns,
              "Item Name",
              "Item Identifier",
+             "Stocks",
              "Item Price");
     printf("\n");
     ansi_colorize_end();
@@ -166,9 +179,10 @@ void showItemsDBEntries()
         if (i == toShowEndIndex)
             ansi_colorize_start((ANSI_SGR[]){ANSI_UNDERLINE}, 1);
 
-        printRow(columnWidth, 3,
+        printRow(columnWidth, numColumns,
                  entry.itemName,
                  entry.itemIdentifier,
+                 inttoascii(entry.numStocks),
                  inttoascii(entry.itemPrice));
         printf("\n");
 

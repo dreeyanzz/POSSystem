@@ -10,12 +10,13 @@
 #include <math.h>
 #include <stdarg.h>
 
-/* Enumeration for common keyboard keys.
+/*
+   Enumeration for common keyboard keys.
    Non-letter keys are grouped separately.
    Lower-case letters are assigned starting at 100,
    and upper-case letters starting at 200, to ensure case-sensitivity.
 */
-typedef enum
+typedef enum KeyboardKey
 {
     KEY_NONE = 0,
 
@@ -50,7 +51,7 @@ typedef enum
     KEY_BACKSPACE,
     KEY_LEFTBRACKET,  // [
     KEY_RIGHTBRACKET, // ]
-    KEY_BACKSLASH,    // \\\/
+    KEY_BACKSLASH,    // \/
     KEY_SEMICOLON,    // ;
     KEY_APOSTROPHE,   // '
 

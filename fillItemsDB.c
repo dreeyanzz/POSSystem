@@ -18,7 +18,7 @@ int main(void)
     {
         int randomNumber = minPrice + rand() % (maxPrice - minPrice + 1);
 
-        fprintf(itemsDB, "Item Name %d|%d|%d\n", i, generateItemIdentifier(), randomNumber);
+        fprintf(itemsDB, "Item Name %d|%d|%d|%d\n", i, generateItemIdentifier(), randomNumber, randomNumber);
     }
 
     return 0;

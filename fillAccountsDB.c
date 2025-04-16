@@ -10,7 +10,14 @@ int main(void)
 
     for (int i = 0; i < numberOfEntries; i++)
     {
-        fprintf(itemsDB, "Username %d|Password %d|Display Name %d|Status %d|%s\n", i, i, i, i, generateAccountIdentifier());
+        int randomBool = rand() % 2; // Generates 0 (false) or 1 (true)
+
+        fprintf(itemsDB, "Username%d|%s|Display Name %d|%s|%s\n",
+                i,
+                generateRandomString(5),
+                i,
+                randomBool ? "admin" : "user",
+                generateAccountIdentifier());
     }
 
     return 0;

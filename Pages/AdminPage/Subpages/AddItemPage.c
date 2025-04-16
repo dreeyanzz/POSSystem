@@ -14,12 +14,13 @@ static void confirmAddItem();
 static FILE *itemsDatabase;
 static char *itemName;
 static char *identifier;
+static long initialStocks;
 static long price;
 static bool hasExisted;
 bool emptyItemName;
 bool emptyIdentifier;
 
-static size_t numberOfFields = 3;
+static size_t numberOfFields = 4;
 static Field fields[] = {
     {
         .type = TextField_Type,
@@ -33,6 +34,13 @@ static Field fields[] = {
         .data.textField = {
             .var = &identifier,
             .displayName = "Item identifier",
+        },
+    },
+    {
+        .type = NumberField_Type,
+        .data.numberField = {
+            .var = &initialStocks,
+            .displayName = "Initial number of stocks",
         },
     },
     {
@@ -268,9 +276,10 @@ void confirmAddItem()
 
         if (key == KEY_y)
         {
-            AddItemToDatabase(itemName, identifier, price);
+            AddItemToDatabase(itemName, identifier, initialStocks, price);
             itemName[0] = '\0';
             identifier[0] = '\0';
+            initialStocks = 0;
             price = 0;
 
             break;
