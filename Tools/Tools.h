@@ -258,6 +258,7 @@ void clearTerminal();
     since the Unix Epoch (00:00:00 UTC, January 1, 1970).
 */
 time_t getCurrentTime();
+char *getcurrentDate();
 /*
     Returns the current date and time in the following format:
     "MONTH DD, YYYY | HH:MM:SS AM/PM"
@@ -290,6 +291,7 @@ time_t getCurrentTime();
     `%%` – A literal percent sign
 */
 char *getFormattedCurrentDateTime();
+int compareDates(const void *a, const void *b);
 
 // --to be named--
 

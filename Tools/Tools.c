@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include <direct.h>
 #include "Tools.h"
+#include "Database.h"
 
 char *ansi_colorize(const char *string, ANSI_SGR configurations[], size_t numConfigs)
 {
@@ -379,6 +381,19 @@ time_t getCurrentTime()
     return time(NULL);
 }
 
+char *getcurrentDate()
+{
+
+    time_t now = getCurrentTime();
+    struct tm *local = localtime(&now);
+    static char buffer[80];
+
+    // Format the time as "MONTH DD, YYYY"
+    strftime(buffer, sizeof(buffer), "%B %d, %Y", local);
+
+    return buffer;
+}
+
 char *getFormattedCurrentDateTime()
 {
 
@@ -390,6 +405,18 @@ char *getFormattedCurrentDateTime()
     strftime(buffer, sizeof(buffer), "%B %d, %Y | %I:%M:%S %p", local);
 
     return buffer;
+}
+int compareDates(const void *a, const void *b)
+{
+    const SaleEntry *A = a;
+    const SaleEntry *B = b;
+
+    if (A->timestamp < B->timestamp)
+        return -1;
+    if (A->timestamp > B->timestamp)
+        return +1;
+
+    return 0;
 }
 
 void createFolderIfNotExists(const char *folder)

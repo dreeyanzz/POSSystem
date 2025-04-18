@@ -2,18 +2,38 @@
 #define DATABASE_H
 
 #include <stdio.h>
-
-/*
-    Global variables
-*/
+#include <time.h>
+#include <stdbool.h>
+#include "Tools.h"
 
 extern const char *databasesPath;
 extern char accountsDatabasePath[256];
 extern char itemsDatabasePath[256];
 extern char isOpenDatabasePath[256];
+extern char numCashiersDatabasePath[256];
+extern char transactionsFolderPath[256];
 extern const char *accountsDatabaseName;
 extern const char *itemsDatabaseName;
 extern const char *isOpenDatabaseName;
+extern const char *numCashiersDatabaseName;
+extern const char *transactionsFolderName;
+
+typedef enum
+{
+    ADMIN,
+    USER,
+} Status;
+
+typedef struct
+{
+    char username[100];
+    char password[100];
+    char name[100];
+    char identifier[100];
+    Status status;
+} User;
+
+extern User userData;
 
 typedef enum
 {
@@ -47,6 +67,16 @@ typedef enum
     REMOVE_ITEM_ENTRY,
 } ItemsEntryOperationType;
 
+typedef struct
+{
+    char *cashierName;
+    char *itemName;
+    char *itemIdentifier;
+    int stocksSold;
+    char *dateRaw;
+    time_t timestamp;
+} SaleEntry;
+
 /*
     Initializes all databases
 */
@@ -76,6 +106,11 @@ void removeAccountDatabaseEntryByIdentifier(const char *identifier);
 
 /* Counts how many lines/entries are there in a passed database */
 int countEntries(FILE *db);
+
+void initializeNumCashiersDatabase();
+int countNumCashiers();
+
+void initializeTransactionsFolder();
 
 /* Checks the content of isOpen.csv, true returns `true`, false returns `false` */
 bool getIsOpenStatus();

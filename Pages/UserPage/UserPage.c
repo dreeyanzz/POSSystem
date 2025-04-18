@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include "UserPage.h"
 #include "Subpages/header_files/ScanPage.h"
+#include "Subpages/header_files/ShowHistoryPage.h"
 #include "../../Tools/Tools.h"
 #include "../../Tools/Database.h"
 
@@ -11,6 +12,10 @@ static const PageEntry pageEntries[] = {
     {
         "Scan Page",
         &ScanPage,
+    },
+    {
+        "View Transactions",
+        &ShowHistoryPage,
     },
 };
 static const int numberOfPages = sizeof(pageEntries) / sizeof(pageEntries[0]);

@@ -1,7 +1,7 @@
 Item Name|Item Identifier|Item Remaining Stocks|Item Price
 Iron Sword|ITM001|35|25
 Health Potion|ITM002|150|5
-Mana Potion|ITM003|120|6
+Mana Potion|ITM003|12|6
 Leather Armor|ITM004|40|45
 Steel Shield|ITM005|25|60
 Magic Wand|ITM006|30|80
@@ -9,10 +9,6 @@ Bow and Arrows|ITM007|50|40
 Fire Scroll|ITM008|70|12
 Ice Scroll|ITM009|68|12
 Thunder Scroll|ITM010|66|13
-Golden Ring|ITM011|15|150
-Silver Necklace|ITM012|20|120
-Teleport Stone|ITM013|75|30
-Invisibility Cloak|ITM014|5|350
 Iron Helmet|ITM015|33|35
 Steel Boots|ITM016|28|38
 Herbal Remedy|ITM017|95|7
@@ -49,3 +45,4 @@ Fishing Rod|ITM047|46|18
 Compass|ITM048|49|12
 Lantern|ITM049|52|10
 Camping Tent|ITM050|16|75
+anything|hello world|16|75

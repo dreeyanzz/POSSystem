@@ -7,22 +7,30 @@
 #include "Database.h"
 
 const char *databasesPath = "Databases";
-char accountsDatabasePath[256]; // Databases/accounts.csv
-char itemsDatabasePath[256];    // Databases/items.csv
-char isOpenDatabasePath[256];   // Databases/isOpen.csv
+char accountsDatabasePath[256];    // Databases/accounts.csv
+char itemsDatabasePath[256];       // Databases/items.csv
+char isOpenDatabasePath[256];      // Databases/isOpen.csv
+char numCashiersDatabasePath[256]; // Databases/numCashiers.csv
+char transactionsFolderPath[256];
 const char *accountsDatabaseName = "accounts.csv";
 const char *itemsDatabaseName = "items.csv";
 const char *isOpenDatabaseName = "isOpen.csv";
+const char *numCashiersDatabaseName = "numCashiers.csv";
+const char *transactionsFolderName = "transactions";
 
 void initializeDatabases()
 {
-    snprintf(accountsDatabasePath, sizeof(accountsDatabasePath), "%s/%s", databasesPath, accountsDatabaseName); // Databases/accounts.csv
-    snprintf(itemsDatabasePath, sizeof(itemsDatabasePath), "%s/%s", databasesPath, itemsDatabaseName);          // Databases/items.csv
-    snprintf(isOpenDatabasePath, sizeof(isOpenDatabasePath), "%s/%s", databasesPath, isOpenDatabaseName);       // Databases/isOpen.csv
+    snprintf(accountsDatabasePath, sizeof(accountsDatabasePath), "%s/%s", databasesPath, accountsDatabaseName);          // Databases/accounts.csv
+    snprintf(itemsDatabasePath, sizeof(itemsDatabasePath), "%s/%s", databasesPath, itemsDatabaseName);                   // Databases/items.csv
+    snprintf(isOpenDatabasePath, sizeof(isOpenDatabasePath), "%s/%s", databasesPath, isOpenDatabaseName);                // Databases/isOpen.csv
+    snprintf(numCashiersDatabasePath, sizeof(numCashiersDatabasePath), "%s/%s", databasesPath, numCashiersDatabaseName); // Databases/numCashiers.csv
+    snprintf(transactionsFolderPath, sizeof(transactionsFolderPath), "%s/%s", databasesPath, transactionsFolderName);
 
     createFolderIfNotExists(databasesPath);
     InitializeAccountsDatabase();
     InitializeItemsDatabase();
+    initializeNumCashiersDatabase();
+    initializeTransactionsFolder();
 }
 
 void InitializeAccountsDatabase()
@@ -242,6 +250,91 @@ int countEntries(FILE *db)
     rewind(db); // put the pointer again to the top
 
     return numEntries;
+}
+
+void initializeNumCashiersDatabase()
+{
+    FILE *numCashiersDB = fopen(numCashiersDatabasePath, "w");
+
+    fprintf(numCashiersDB, "%d", countNumCashiers());
+
+    fclose(numCashiersDB);
+}
+
+int countNumCashiers()
+{
+    int numCashiers = 0;
+    FILE *accountsDB = fopen(accountsDatabasePath, "r");
+
+    rewind(accountsDB);
+    char buffer[1024];
+    fgets(buffer, sizeof(buffer), accountsDB);
+    while (fgets(buffer, sizeof(buffer), accountsDB))
+    {
+        buffer[strcspn(buffer, "\n")] = '\0';
+
+        char *dbUsername = strtok(buffer, "|");
+        char *dbPassword = strtok(NULL, "|");
+        char *dbDisplayName = strtok(NULL, "|");
+        char *dbStatus = strtok(NULL, "|");
+
+        bool isCashier = strcmp(dbStatus, "user") == 0;
+
+        if (isCashier)
+            numCashiers++;
+    }
+
+    fclose(accountsDB);
+
+    return numCashiers;
+}
+
+void initializeTransactionsFolder()
+{
+    FILE *accountsDB = fopen(accountsDatabasePath, "r");
+
+    char buffer[2048];
+    rewind(accountsDB);
+    fgets(buffer, sizeof(buffer), accountsDB);
+    while (fgets(buffer, sizeof(buffer), accountsDB))
+    {
+        buffer[strcspn(buffer, "\n")] = '\0';
+        char *cashierIdentifier;
+        char cashierFilePath[2048];
+
+        char *dbUsername = strtok(buffer, "|");
+        char *dbPassword = strtok(NULL, "|");
+        char *dbDisplayName = strtok(NULL, "|");
+        char *dbStatus = strtok(NULL, "|");
+        char *dbIdentifier = strtok(NULL, "|");
+
+        bool isCashier = strcmp(dbStatus, "user") == 0;
+
+        if (isCashier)
+        {
+            cashierIdentifier = strdup(dbIdentifier);
+
+            snprintf(cashierFilePath,
+                     sizeof(cashierFilePath),
+                     "%s/%s%s",
+                     transactionsFolderPath,
+                     cashierIdentifier,
+                     ".csv");
+
+            FILE *cashierFile = fopen(cashierFilePath, "r");
+            if (cashierFile == NULL)
+            {
+                cashierFile = fopen(cashierFilePath, "w");
+
+                fprintf(cashierFile,
+                        "Item Name|Item Identifier|Stocks Sold|DateTime\n");
+            }
+
+            fclose(cashierFile);
+        }
+    }
+
+    fclose(accountsDB);
 }
 
 bool getIsOpenStatus()

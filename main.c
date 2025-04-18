@@ -19,20 +19,6 @@
     ╚═════╝ ╚══════╝ ╚═════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
 */
 
-typedef enum
-{
-    ADMIN,
-    USER,
-} Status;
-
-typedef struct
-{
-    char username[100];
-    char password[100];
-    char name[100];
-    Status status;
-} User;
-
 bool authenticate(char *username, char *password, User *user);
 Status setStatus(char status[]);
 
@@ -49,10 +35,17 @@ void Decider(Status status);
     ██║ ╚═╝ ██║██║  ██║██║██║ ╚████║
     ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝
 */
+
+User userData = {
+    .username = "",
+    .password = "",
+    .name = "",
+    .identifier = "",
+    .status = USER,
+};
+
 int main(void)
 {
-
-    User userData;
 
     srand(time(NULL)); // Seed the randomizers
 
@@ -365,24 +358,19 @@ bool authenticate(char *inputUsername, char *inputPassword, User *userData)
         char *password = strtok(NULL, "|");
         char *name = strtok(NULL, "|");
         char *status = strtok(NULL, "|");
+        char *identifer = strtok(NULL, "|");
 
-        if ((strcmp(username, inputUsername) == 0) && (strcmp(password, inputPassword) == 0))
+        bool matchUsername = strcmp(username, inputUsername) == 0;
+        bool matchPassword = strcmp(password, inputPassword) == 0;
+
+        if (matchUsername && matchPassword)
         {
-
-            /*
-                The user is authenticated if the username and password match the records in the accounts.csv file.
-                The user's information is stored in the `user` struct.
-                The `user` struct contains the following fields:
-                - username
-                - password
-                - name
-                - status
-            */
 
             strcpy(userData->username, username);
             strcpy(userData->password, password);
             strcpy(userData->name, name);
             userData->status = setStatus(status);
+            strcpy(userData->identifier, identifer);
 
             isAuthenticated = true;
             break;
