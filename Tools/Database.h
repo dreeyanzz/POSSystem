@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdbool.h>
+#include <stdarg.h>
 #include "Tools.h"
 
 extern const char *databasesPath;
@@ -67,6 +68,16 @@ typedef enum
     REMOVE_ITEM_ENTRY,
 } ItemsEntryOperationType;
 
+typedef enum
+{
+    CHANGE_ACCOUNT_USERNAME,
+    CHANGE_ACCOUNT_PASSWORD,
+    CHANGE_ACCOUNT_DISPLAYNAME,
+    CHANGE_ACCOUNT_STATUS,
+    CHANGE_ACCOUNT_IDENTIFIER,
+    REMOVE_ACCOUNT_ENTRY,
+} AccountsEntryOperationType;
+
 typedef struct
 {
     char *cashierName;
@@ -103,6 +114,7 @@ void changeItemPropertyByIdentifier(const char *identifier, ItemsEntryOperationT
     Checks every line of accounts.csv, if the passed identifier matches, it deletes that line/entry
 */
 void removeAccountDatabaseEntryByIdentifier(const char *identifier);
+void changeAccountPropertyByIdentifier(const char *identifier, AccountsEntryOperationType operationType, ...);
 
 /* Counts how many lines/entries are there in a passed database */
 int countEntries(FILE *db);

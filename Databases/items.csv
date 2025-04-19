@@ -1,48 +1,46 @@
 Item Name|Item Identifier|Item Remaining Stocks|Item Price
-Iron Sword|ITM001|35|25
-Health Potion|ITM002|150|5
-Mana Potion|ITM003|12|6
-Leather Armor|ITM004|40|45
-Steel Shield|ITM005|25|60
-Magic Wand|ITM006|30|80
-Bow and Arrows|ITM007|50|40
-Fire Scroll|ITM008|70|12
-Ice Scroll|ITM009|68|12
-Thunder Scroll|ITM010|66|13
-Iron Helmet|ITM015|33|35
-Steel Boots|ITM016|28|38
-Herbal Remedy|ITM017|95|7
-Strength Elixir|ITM018|60|14
-Stamina Brew|ITM019|80|9
-Crystal Orb|ITM020|18|99
-Gemstone Amulet|ITM021|12|200
-Battle Axe|ITM022|22|70
-Crossbow|ITM023|26|55
-Poison Dagger|ITM024|34|47
-Phoenix Feather|ITM025|10|500
-Enchanted Book|ITM026|14|130
-Flaming Sword|ITM027|7|215
-Ice Hammer|ITM028|8|195
-Dragon Scale|ITM029|6|650
-Warrior Cape|ITM030|19|85
-Wool Tunic|ITM031|45|20
-Map Scroll|ITM032|100|3
-Torch|ITM033|120|2
-Climbing Rope|ITM034|40|11
-Lockpick Set|ITM035|32|8
-Leather Gloves|ITM036|38|15
-Miners Pickaxe|ITM037|24|22
-Blacksmith Hammer|ITM038|20|27
-Spell Tome|ITM039|13|99
-Beast Whistle|ITM040|10|44
-Magic Mirror|ITM041|9|300
-Ancient Coin|ITM042|17|250
-Gold Ingot|ITM043|21|145
-Silver Ingot|ITM044|25|90
-Travelers Boots|ITM045|31|36
-Mage Hat|ITM046|23|28
-Fishing Rod|ITM047|46|18
-Compass|ITM048|49|12
-Lantern|ITM049|52|10
-Camping Tent|ITM050|16|75
-anything|hello world|16|75
+tanginamo|ID004|118|123
+21|ID007|1231|23
+Aether Lens|ID008|21|6.75
+Pulse Vial|ID009|90|23
+Obsidian Gear|ID010|70|8.80
+Nano Fabric|ID011|110|14.50
+Fusion Rod|ID012|70|16.00
+Astral Dust|ID013|75|9.30
+Vortex Unit|ID014|55|10.00
+Ion Flask|ID015|140|4.95
+Crimson Shard|ID016|95|11.75
+Chrome Alloy|ID017|125|6.40
+Starlight Orb|ID018|60|7.70
+Rift Key|ID019|145|10.25
+Zero Crystal|ID020|180|12.90
+Amber Flux|ID021|105|9.10
+Void Matrix|ID022|115|14.80
+Drift Core|ID023|130|8.50
+Warp Stone|ID024|100|13.00
+Frost Circuit|ID025|90|7.60
+Thunder Coil|ID026|85|6.90
+Magnet Shard|ID027|160|11.10
+Solar Capsule|ID028|120|5.95
+Jet Ember|ID029|70|10.80
+Phantom Disk|ID030|155|9.40
+Tesseract Ring|ID031|75|12.20
+Cryo Cell|ID032|100|8.25
+Blaze Prism|ID033|115|6.60
+Stealth Node|ID034|125|14.10
+Omega Lens|ID035|135|5.75
+Pulse Hammer|ID036|150|13.30
+Aether Crystal|ID037|21|7.45
+Venom Synth|ID038|95|10.10
+Titanium Spark|ID039|105|11.90
+Nebula Token|ID040|110|9.20
+Comet Stone|ID041|140|6.10
+Gravity Seal|ID042|100|12.50
+Core Reactor|ID043|90|7.95
+Inferno Valve|ID044|130|10.60
+Echo Drive V2|ID045|80|11.35
+Viral Shard|ID046|85|13.75
+Nova Spark X|ID047|95|9.85
+Starlight Coil|ID048|150|8.60
+Blacklight Chip|ID049|170|14.25
+Prism Core|ID050|100|6.45

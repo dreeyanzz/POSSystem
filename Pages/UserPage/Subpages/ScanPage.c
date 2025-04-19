@@ -40,6 +40,8 @@ static bool isSelected;
 
 static int selectedEntryIndex;
 
+static int totalCost;
+
 void ScanPage()
 {
     itemsDB = fopen(itemsDatabasePath, "a+");
@@ -60,6 +62,8 @@ void ScanPage()
 
     selectedEntryIndex = 0;
 
+    totalCost = 0;
+
     while (true)
     {
         clearTerminal();
@@ -69,8 +73,7 @@ void ScanPage()
         fillItemsDBEntries();
 
         pageHeader();
-        printf("selectedEntryIndex: %d\n", selectedEntryIndex);
-        printf("numSelectedItems: %d\n", numSelectedItems);
+
         printf("\n");
 
         if (numItemsDBEntries == 0)
@@ -115,6 +118,10 @@ void ScanPage()
             }
         }
 
+        totalCost = 0;
+        for (int i = 0; i < numSelectedItems; i++)
+            totalCost += selectedItems[i].quantity * selectedItems[i].entry.itemPrice;
+
         isSelected = false;
         int isSelectedIndex;
         for (int i = 0; i < numSelectedItems; i++)
@@ -137,6 +144,8 @@ void ScanPage()
             printf("No items matched.\n");
             goto input;
         }
+
+        printf("Total Cost: %d\n", totalCost);
 
         adjustEntriesToShow();
         showItemsDBEntries();
@@ -169,6 +178,14 @@ void ScanPage()
                 selectedEntryIndex == numSearched - 1 ? selectedEntryIndex = 0 : selectedEntryIndex++;
                 break;
 
+            case KEY_HOME:
+                selectedEntryIndex = 0;
+                break;
+
+            case KEY_END:
+                selectedEntryIndex = numSearched > 0 ? numSearched - 1 : 0;
+                break;
+
             case KEY_DELETE:
                 if (isSelected)
                     selectedItems[isSelectedIndex].quantity = 0;
@@ -183,14 +200,6 @@ void ScanPage()
 
                     selectedEntryIndex = 0;
                 }
-                break;
-
-            case KEY_HOME:
-                selectedEntryIndex = 0;
-                break;
-
-            case KEY_END:
-                selectedEntryIndex = numSearched > 0 ? numSearched - 1 : 0;
                 break;
 
             default:
@@ -269,6 +278,9 @@ void pageHeader()
     printf("Scan Page\n");
     printf("Current Datetime: %s\n", getFormattedCurrentDateTime());
     printf("Press [esc] to go back.\n");
+    printf("Items with arrows on the right side are selected items.\n");
+    printf("Press a number to add quantity.\n");
+    printf("Press [enter] to proceed and end the scan.\n");
 }
 
 void fillItemsDBEntries()
@@ -379,8 +391,10 @@ void showItemsDBEntries()
                  inttoascii(currentEntry.numStocks),
                  inttoascii(currentEntry.itemPrice),
                  inttoascii(isSelected ? currentSelectedItem.quantity : 0));
-        printf("\n");
         ansi_colorize_end();
+        if (isSelected)
+            printf(" <--");
+        printf("\n");
     }
     printf("\n");
 }
@@ -432,6 +446,11 @@ void confirmSelected()
                          transactionTimeStamp);
 
                 fprintf(cashierFile, "%s\n", userTransactionsHistoryEntry);
+
+                fclose(itemsDB);
+                int newNumStocks = currentSelectedItem->entry.numStocks - currentSelectedItem->quantity;
+                changeItemPropertyByIdentifier(currentSelectedItem->entry.itemIdentifier, CHANGE_ITEM_STOCKS, newNumStocks);
+                itemsDB = fopen(itemsDatabasePath, "a+");
             }
 
             fclose(cashierFile);

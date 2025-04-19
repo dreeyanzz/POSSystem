@@ -10,7 +10,7 @@ typedef struct
     char *operationName;
     ItemsEntryOperationType operationType;
     void *operationFunc;
-} OperationsFieldEntry;
+} ItemOperationsFieldEntry;
 
 static const char *pageTitle = "Item Operations Page";
 static const int numColumns = 4;
@@ -33,15 +33,19 @@ static FILE *itemsDB;
 static ItemsDatabaseEntry *itemsDBEntries;
 static int numItemsDBEntries;
 
+static char *textToSearch;
+static int numSearched;
+
+static ItemsDatabaseEntry *itemsToShow;
 static int numItemsToShow;
-static int toShowStartIndex = 0;
+static int toShowStartIndex;
 static int toShowEndIndex;
 
-static int selectedEntryIndex = 0;
-static int selectedOperationIndex = 0;
+static int selectedEntryIndex;
+static int selectedOperationIndex;
 
 const int numOperations = 4;
-static const OperationsFieldEntry operations[] = {
+static const ItemOperationsFieldEntry operations[] = {
     {
         "Remove Item Entry",
         REMOVE_ITEM_ENTRY,
@@ -66,8 +70,20 @@ static const OperationsFieldEntry operations[] = {
 
 void ItemOperationsPage()
 {
-
     itemsDB = fopen(itemsDatabasePath, "a+");
+
+    numItemsDBEntries = 0;
+
+    textToSearch = (char *)malloc(sizeof(char));
+    textToSearch[0] = '\0';
+    numSearched = 0;
+
+    itemsToShow = (ItemsDatabaseEntry *)malloc(sizeof(ItemsDatabaseEntry));
+    numItemsToShow = 0;
+    toShowStartIndex = 0;
+
+    selectedEntryIndex = 0;
+    selectedOperationIndex = 0;
 
     while (true)
     {
@@ -77,22 +93,58 @@ void ItemOperationsPage()
         itemsDBEntries = (ItemsDatabaseEntry *)malloc(numItemsDBEntries * sizeof(ItemsDatabaseEntry));
         fillItemsDBEntries();
 
-        numItemsToShow = numItemsDBEntries >= maxEntriesToShow ? maxEntriesToShow : numItemsDBEntries;
-        toShowEndIndex = toShowStartIndex + numItemsToShow - 1;
-
         pageHeader();
-        printf("selectedEntryIndex: %d\n", selectedEntryIndex);
         printf("\n");
-
         if (numItemsDBEntries == 0)
         {
             printf("No items yet. Add some items to remove.\n");
-            goto last;
+            goto input;
         }
+
+        numSearched = 0;
+        for (int i = 0; i < numItemsDBEntries; i++)
+        {
+            ItemsDatabaseEntry *currentEntry = &itemsDBEntries[i];
+            char *itemName = strdup(currentEntry->itemName);
+            char *itemIdentifier = strdup(currentEntry->itemIdentifier);
+
+            bool matchItemName = strstr(toLowercase(itemName), toLowercase(textToSearch)) != NULL;
+            bool matchItemIdentifier = strstr(toLowercase(itemIdentifier), toLowercase(textToSearch)) != NULL;
+
+            if (matchItemName || matchItemIdentifier)
+            {
+                numSearched++;
+
+                itemsToShow = realloc(itemsToShow, numSearched * sizeof(ItemsDatabaseEntry));
+
+                itemsToShow[numSearched - 1] = *currentEntry;
+            }
+
+            free(itemName);
+            free(itemIdentifier);
+        }
+
+        printf("Total number of items: %d\n", numItemsDBEntries);
+        printf("Number of results: %d\n", numSearched);
+        printf("\n");
+
+        printf("Search Item name / Item Identifier: %s", textToSearch);
+        printWhiteHighlight();
+        printf("\n");
+
+        if (numSearched == 0)
+        {
+            printf("No items matched.\n");
+            goto input;
+        }
+
         adjustEntriesToShow();
         showItemsDBEntries();
 
-        KeyboardKey key = getKeyPressInsensitive();
+    input:
+        KeyboardKey key = getKeyPress();
+        char c = mappedAlNum(key);
+        char temp[2] = {c, '\0'};
 
         if (key == KEY_ESCAPE)
             break;
@@ -102,12 +154,12 @@ void ItemOperationsPage()
             switch (key)
             {
             case KEY_UP:
-                selectedEntryIndex == 0 ? selectedEntryIndex = numItemsDBEntries - 1 : selectedEntryIndex--;
+                selectedEntryIndex == 0 ? selectedEntryIndex = numSearched - 1 : selectedEntryIndex--;
                 break;
 
             case KEY_TAB:
             case KEY_DOWN:
-                selectedEntryIndex == numItemsDBEntries - 1 ? selectedEntryIndex = 0 : selectedEntryIndex++;
+                selectedEntryIndex == numSearched - 1 ? selectedEntryIndex = 0 : selectedEntryIndex++;
                 break;
 
             case KEY_HOME:
@@ -115,14 +167,35 @@ void ItemOperationsPage()
                 break;
 
             case KEY_END:
-                selectedEntryIndex = numItemsDBEntries - 1;
+                selectedEntryIndex = numSearched > 0 ? numSearched - 1 : 0;
+                break;
+
+            case KEY_BACKSPACE:
+                if (strlen(textToSearch) > 0)
+                {
+                    size_t stringLength = strlen(textToSearch);
+                    textToSearch[stringLength - 1] = '\0';
+                    textToSearch = realloc(textToSearch, stringLength);
+
+                    selectedEntryIndex = 0;
+                }
                 break;
 
             default:
-                break;
-            }
+            {
+                bool emptyTemp = temp[0] == '\0';
 
-    last:
+                if (!emptyTemp)
+                {
+                    size_t stringLength = strlen(textToSearch) + strlen(temp) + 1;
+                    textToSearch = realloc(textToSearch, stringLength);
+                    strcat(textToSearch, temp);
+
+                    selectedEntryIndex = 0;
+                }
+            }
+            break;
+            }
 
         for (int i = 0; i < numItemsDBEntries; i++)
         {
@@ -171,6 +244,9 @@ void fillItemsDBEntries()
 
 void adjustEntriesToShow()
 {
+    numItemsToShow = numSearched >= maxEntriesToShow ? maxEntriesToShow : numSearched;
+    toShowEndIndex = toShowStartIndex + numItemsToShow - 1;
+
     if (selectedEntryIndex > toShowEndIndex)
     {
         while (selectedEntryIndex > toShowEndIndex)
@@ -187,9 +263,9 @@ void adjustEntriesToShow()
             toShowEndIndex--;
         }
     }
-    if (selectedEntryIndex >= numItemsDBEntries)
+    if (selectedEntryIndex >= numSearched)
     {
-        while (selectedEntryIndex >= numItemsDBEntries)
+        while (selectedEntryIndex >= numSearched)
         {
             if (selectedEntryIndex > 0)
                 selectedEntryIndex--;
@@ -209,11 +285,12 @@ void showItemsDBEntries()
              "Item Identifier",
              "Stocks",
              "Item Price");
-    printf("\n");
     ansi_colorize_end();
+    printf("\n");
+
     for (int i = toShowStartIndex; i <= toShowEndIndex; i++)
     {
-        const ItemsDatabaseEntry entry = itemsDBEntries[i];
+        ItemsDatabaseEntry *entry = &itemsToShow[i];
 
         if (i == selectedEntryIndex)
         {
@@ -227,13 +304,12 @@ void showItemsDBEntries()
             ansi_colorize_start((ANSI_SGR[]){ANSI_UNDERLINE}, 1);
 
         printRow(columnWidth, numColumns,
-                 entry.itemName,
-                 entry.itemIdentifier,
-                 inttoascii(entry.numStocks),
-                 inttoascii(entry.itemPrice));
-        printf("\n");
-
+                 entry->itemName,
+                 entry->itemIdentifier,
+                 inttoascii(entry->numStocks),
+                 inttoascii(entry->itemPrice));
         ansi_colorize_end();
+        printf("\n");
     }
     printf("\n");
 }
@@ -246,16 +322,16 @@ void showOperations()
         clearTerminal();
 
         pageHeader();
-        printf("selectedEntryIndex: %d\n", selectedEntryIndex);
         printf("\n");
 
         showItemsDBEntries();
         printf("\n");
 
         printf("Select an operation\n");
+        printf("Press [enter] to proceed.\n");
         for (int i = 0; i < numOperations; i++)
         {
-            OperationsFieldEntry currentOperation = operations[i];
+            ItemOperationsFieldEntry currentOperation = operations[i];
 
             i == selectedOperationIndex ? printColoredCursor() : printf("  ");
 
@@ -294,7 +370,7 @@ void removeItemEntry()
 {
     fclose(itemsDB);
 
-    char *itemIdentifier = strdup(itemsDBEntries[selectedEntryIndex].itemIdentifier);
+    char *itemIdentifier = strdup(itemsToShow[selectedEntryIndex].itemIdentifier);
 
     removeItemsDatabaseEntryByIdentifier(itemIdentifier);
     if (selectedEntryIndex > 0)
@@ -315,7 +391,6 @@ void changeItemName()
         clearTerminal();
 
         pageHeader();
-        printf("selectedEntryIndex: %d\n", selectedEntryIndex);
         printf("\n");
 
         showItemsDBEntries();
@@ -324,7 +399,7 @@ void changeItemName()
         printf("Select an operation\n");
         for (int i = 0; i < numOperations; i++)
         {
-            OperationsFieldEntry currentOperation = operations[i];
+            ItemOperationsFieldEntry currentOperation = operations[i];
 
             i == selectedOperationIndex ? printColoredCursor() : printf("  ");
 
@@ -343,7 +418,7 @@ void changeItemName()
         if (key == KEY_ENTER)
         {
             fclose(itemsDB);
-            char *itemIdentifier = strdup(itemsDBEntries[selectedEntryIndex].itemIdentifier);
+            char *itemIdentifier = strdup(itemsToShow[selectedEntryIndex].itemIdentifier);
             changeItemPropertyByIdentifier(itemIdentifier, CHANGE_ITEM_NAME, newItemName);
             itemsDB = fopen(itemsDatabasePath, "a+");
 
@@ -394,7 +469,6 @@ void changeStocks()
         clearTerminal();
 
         pageHeader();
-        printf("selectedEntryIndex: %d\n", selectedEntryIndex);
         printf("\n");
 
         showItemsDBEntries();
@@ -403,7 +477,7 @@ void changeStocks()
         printf("Select an operation\n");
         for (int i = 0; i < numOperations; i++)
         {
-            OperationsFieldEntry currentOperation = operations[i];
+            ItemOperationsFieldEntry currentOperation = operations[i];
 
             i == selectedOperationIndex ? printColoredCursor() : printf("  ");
 
@@ -421,7 +495,7 @@ void changeStocks()
         if (key == KEY_ENTER)
         {
             fclose(itemsDB);
-            char *itemIdentifier = strdup(itemsDBEntries[selectedEntryIndex].itemIdentifier);
+            char *itemIdentifier = strdup(itemsToShow[selectedEntryIndex].itemIdentifier);
             changeItemPropertyByIdentifier(itemIdentifier, CHANGE_ITEM_STOCKS, newNumStocks);
             itemsDB = fopen(itemsDatabasePath, "a+");
 
@@ -457,7 +531,6 @@ void changeItemPrice()
         clearTerminal();
 
         pageHeader();
-        printf("selectedEntryIndex: %d\n", selectedEntryIndex);
         printf("\n");
 
         showItemsDBEntries();
@@ -466,7 +539,7 @@ void changeItemPrice()
         printf("Select an operation\n");
         for (int i = 0; i < numOperations; i++)
         {
-            OperationsFieldEntry currentOperation = operations[i];
+            ItemOperationsFieldEntry currentOperation = operations[i];
 
             i == selectedOperationIndex ? printColoredCursor() : printf("  ");
 
@@ -484,7 +557,7 @@ void changeItemPrice()
         if (key == KEY_ENTER)
         {
             fclose(itemsDB);
-            char *itemIdentifier = strdup(itemsDBEntries[selectedEntryIndex].itemIdentifier);
+            char *itemIdentifier = strdup(itemsToShow[selectedEntryIndex].itemIdentifier);
             changeItemPropertyByIdentifier(itemIdentifier, CHANGE_ITEM_PRICE, newItemPrice);
             itemsDB = fopen(itemsDatabasePath, "a+");
 

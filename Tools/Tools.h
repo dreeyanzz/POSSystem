@@ -291,6 +291,7 @@ char *getcurrentDate();
     `%%` – A literal percent sign
 */
 char *getFormattedCurrentDateTime();
+int getMonthNumber(const char *monthName);
 int compareDates(const void *a, const void *b);
 
 // --to be named--

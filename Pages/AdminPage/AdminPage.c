@@ -4,8 +4,9 @@
 #include "Subpages/header_files/EnrollAccountPage.h"
 #include "Subpages/header_files/AddItemPage.h"
 #include "Subpages/header_files/ItemOperationsPage.h"
-#include "Subpages/header_files/RemoveAccountPage.h"
+#include "Subpages/header_files/AccountOperationsPage.h"
 #include "Subpages/header_files/StoreStatusPage.h"
+#include "Subpages/header_files/TransactionHistoriesPage.h"
 #include "../../Tools/Tools.h"
 
 static const PageEntry pageEntries[] = {
@@ -22,8 +23,12 @@ static const PageEntry pageEntries[] = {
         &ItemOperationsPage,
     },
     {
-        "Remove Account",
-        &RemoveAccountPage,
+        "Account Operations Page",
+        &AccountOperationsPage,
+    },
+    {
+        "Transaction Histories",
+        &TransactionHistoriesPage,
     },
     {
         "Store Status",

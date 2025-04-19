@@ -406,14 +406,37 @@ char *getFormattedCurrentDateTime()
 
     return buffer;
 }
+int getMonthNumber(const char *monthName)
+{
+    static const char *months[] = {
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    };
+    for (int i = 0; i < 12; i++)
+    {
+        if (strcasecmp(monthName, months[i]) == 0)
+            return i;
+    }
+    return -1; // Invalid month
+}
 int compareDates(const void *a, const void *b)
 {
     const SaleEntry *A = a;
     const SaleEntry *B = b;
 
-    if (A->timestamp < B->timestamp)
-        return -1;
     if (A->timestamp > B->timestamp)
+        return -1;
+    if (A->timestamp < B->timestamp)
         return +1;
 
     return 0;

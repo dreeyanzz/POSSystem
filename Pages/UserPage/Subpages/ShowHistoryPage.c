@@ -102,8 +102,6 @@ void ShowHistoryPage()
             index++;
         }
 
-        qsort(entriesToShow, numItemsToShow, sizeof(SaleEntry), compareDates);
-
         pageHeader();
         printf("\n");
 
@@ -134,6 +132,8 @@ void ShowHistoryPage()
             free(itemName);
             free(itemIdentifier);
         }
+
+        qsort(entriesToShow, numSearched, sizeof(SaleEntry), compareDates);
 
         printf("Search Item name / Item Identifier: %s", textToSearch);
         printWhiteHighlight();
@@ -288,28 +288,4 @@ void pageHeader()
     printf("Show History Page\n");
     printf("Current Datetime: %s\n", getFormattedCurrentDateTime());
     printf("Press [esc] to go back.\n");
-}
-
-int getMonthNumber(const char *monthName)
-{
-    static const char *months[] = {
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-    };
-    for (int i = 0; i < 12; i++)
-    {
-        if (strcasecmp(monthName, months[i]) == 0)
-            return i;
-    }
-    return -1; // Invalid month
 }

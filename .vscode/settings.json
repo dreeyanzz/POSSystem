@@ -9,6 +9,7 @@
     "enrollaccountpage.h": "c",
     "stdbool.h": "c",
     "string.h": "c",
-    "storestatuspage.h": "c"
+    "storestatuspage.h": "c",
+    "accountoperationspage.h": "c"
   }
 }

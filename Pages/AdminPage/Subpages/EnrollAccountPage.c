@@ -22,7 +22,7 @@ static bool emptyPassword;
 static bool emptyDisplayName;
 
 static const int numberOfFields = 4;
-static const Field fields[] = {
+static Field fields[] = {
     {
         .type = TextField_Type,
         .data.textField = {
@@ -126,9 +126,9 @@ void EnrollAccountPage(void)
         {
             if (fields[cursor].type == PasswordField_Type)
             {
-                PasswordField selectedPasswordField = fields[cursor].data.passwordField;
+                PasswordField *selectedPasswordField = &fields[cursor].data.passwordField;
 
-                selectedPasswordField.showPassword = !selectedPasswordField.showPassword;
+                selectedPasswordField->showPassword = !selectedPasswordField->showPassword;
             }
 
             break;
