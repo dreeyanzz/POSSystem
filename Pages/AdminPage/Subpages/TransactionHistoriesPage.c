@@ -98,7 +98,7 @@ void TransactionHistoriesPage()
         }
 
         numEntriesToShow = numEntriesSearched >= numMaxEntriesToShow ? numMaxEntriesToShow : numEntriesSearched;
-        toShowEndIndex = toShowStartIndex + numEntriesToShow + 1;
+        toShowEndIndex = toShowStartIndex + numEntriesToShow - 1;
 
         if (selectedEntryIndex > toShowEndIndex)
         {
