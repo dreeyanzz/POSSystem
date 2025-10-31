@@ -231,7 +231,7 @@ void AccountOperationsPage()
 
 void pageHeader()
 {
-    printf("Remove Account Page\n");
+    printf("Account Operations Page\n");
     printf("Current Datetime: %s\n", getFormattedCurrentDateTime());
     printf("Press [esc] to go back.\n");
 }

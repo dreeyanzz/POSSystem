@@ -19,12 +19,28 @@
     ╚═════╝ ╚══════╝ ╚═════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚══════╝
 */
 
+/*
+    Authenticates the input username and input password,
+    if username and password matches,
+    puts values in `User user`.
+*/
 bool authenticate(char *username, char *password, User *user);
+/*
+    Sets status to the `User user.status` struct,
+    depends on the value passed from authenticate().
+*/
 Status setStatus(char status[]);
 
 // Page functions
 
+/*
+    Displays the LogIn Page.
+    Displays Username and Password fields.
+*/
 void LogInPage(User *user);
+/*
+    Decides whether to show `admin side` or `cashier side` pages
+*/
 void Decider(Status status);
 
 /*

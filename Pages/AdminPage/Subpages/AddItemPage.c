@@ -265,7 +265,7 @@ void confirmAddItem()
         pageHeader();
         printf("\n");
 
-        printf("Press [enter] to confirm.\n");
+        printf("\n");
         showFields();
         printf("\n");
 

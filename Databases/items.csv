@@ -1,46 +1,101 @@
 Item Name|Item Identifier|Item Remaining Stocks|Item Price
-tanginamo|ID004|118|123
-21|ID007|1231|23
-Aether Lens|ID008|21|6.75
-Pulse Vial|ID009|90|23
-Obsidian Gear|ID010|70|8.80
-Nano Fabric|ID011|110|14.50
-Fusion Rod|ID012|70|16.00
-Astral Dust|ID013|75|9.30
-Vortex Unit|ID014|55|10.00
-Ion Flask|ID015|140|4.95
-Crimson Shard|ID016|95|11.75
-Chrome Alloy|ID017|125|6.40
-Starlight Orb|ID018|60|7.70
-Rift Key|ID019|145|10.25
-Zero Crystal|ID020|180|12.90
-Amber Flux|ID021|105|9.10
-Void Matrix|ID022|115|14.80
-Drift Core|ID023|130|8.50
-Warp Stone|ID024|100|13.00
-Frost Circuit|ID025|90|7.60
-Thunder Coil|ID026|85|6.90
-Magnet Shard|ID027|160|11.10
-Solar Capsule|ID028|120|5.95
-Jet Ember|ID029|70|10.80
-Phantom Disk|ID030|155|9.40
-Tesseract Ring|ID031|75|12.20
-Cryo Cell|ID032|100|8.25
-Blaze Prism|ID033|115|6.60
-Stealth Node|ID034|125|14.10
-Omega Lens|ID035|135|5.75
-Pulse Hammer|ID036|150|13.30
-Aether Crystal|ID037|21|7.45
-Venom Synth|ID038|95|10.10
-Titanium Spark|ID039|105|11.90
-Nebula Token|ID040|110|9.20
-Comet Stone|ID041|140|6.10
-Gravity Seal|ID042|100|12.50
-Core Reactor|ID043|90|7.95
-Inferno Valve|ID044|130|10.60
-Echo Drive V2|ID045|80|11.35
-Viral Shard|ID046|85|13.75
-Nova Spark X|ID047|95|9.85
-Starlight Coil|ID048|150|8.60
-Blacklight Chip|ID049|170|14.25
-Prism Core|ID050|100|6.45
+Blink Dagger|X7A9|50|2250
+Black King Bar|F29Q|12|4050
+Aghanim's Scepter|J4NK|40|4200
+Desolator|L9WT|30|3500
+Manta Style|Q2HE|28|4600
+Heart of Tarrasque|M7YD|15|5000
+Monkey King Bar|K8VC|20|4200
+Butterfly|D3PL|18|4975
+Eul's Scepter of Divinity|R6BM|22|2725
+Force Staff|Z1XU|40|2250
+Bloodthorn|H5QJ|10|6800
+Daedalus|A8CR|25|5150
+Radiance|N4SY|12|5150
+Heaven's Halberd|W2LM|17|3550
+Pipe of Insight|B6KD|30|3450
+Crimson Guard|Y3ZT|35|3600
+Scythe of Vyse|G0FU|14|5700
+Lotus Orb|T9EQ|20|3850
+Glimmer Cape|V2WP|50|1950
+Spirit Vessel|J3AN|30|2980
+Refresher Orb|K1GR|9|5000
+Solar Crest|U6TY|25|2625
+Shiva's Guard|D2NZ|18|4850
+Linken's Sphere|P5MX|15|4600
+Meteor Hammer|S4JB|40|2625
+Aether Lens|M9UC|21|2275
+Battle Fury|F7ER|12|4100
+Assault Cuirass|C3VH|75|5250
+Eye of Skadi|R0KE|95|5300
+Mjollnir|L4TX|125|5600
+Silver Edge|B2HQ|60|5550
+Orchid Malevolence|V3CE|145|3475
+Diffusal Blade|Q8DZ|180|2500
+Echo Sabre|T5YL|105|2500
+Armlet of Mordiggian|Z0WR|115|2500
+Hurricane Pike|W9JU|130|4600
+Ghost Scepter|A1KQ|100|1500
+Yasha|S0EM|90|2050
+Dragon Lance|U2LF|85|1900
+Null Talisman|X3NP|160|505
+Bracer|M5YB|120|505
+Wraith Band|N1XT|70|505
+Boots of Speed|E7DW|155|500
+Power Treads|K4RJ|75|1400
+Phase Boots|G2MH|95|1500
+Arcane Boots|F0NL|125|1300
+Tranquil Boots|H3ZT|135|925
+Guardian Greaves|J9CP|150|4950
+Mekansm|R8VW|21|1775
+Vladmir's Offering|Z5QA|95|2450
+Helm of the Dominator|U1LF|105|2400
+Helm of the Overlord|C4EM|110|6050
+Satanic|T3QX|140|5050
+Mask of Madness|L7YH|100|1775
+Morbid Mask|B1VT|90|900
+Ring of Aquila|E6KU|85|965
+Hand of Midas|M4XA|160|2200
+Maelstrom|K3RE|120|2700
+Gleipnir|N0JZ|70|6150
+Kaya|W7SC|155|2050
+Sange|A9UM|75|2050
+Yasha and Kaya|P6VE|95|4100
+Sange and Yasha|X0NJ|125|4100
+Kaya and Sange|Y4HQ|135|4100
+Holy Locket|V1DZ|150|2650
+Aeon Disk|L0CB|21|3100
+Octarine Core|J8PF|95|5300
+Bloodstone|Z8QR|105|4700
+Ethereal Blade|U9XM|110|4700
+Dagon|S2WF|140|2700
+Necronomicon|G4AR|100|2400
+Rod of Atos|T8VJ|90|2750
+Veil of Discord|B0KY|85|1525
+Urn of Shadows|N2CL|160|880
+Medallion of Courage|D6ZW|120|1025
+Solar Crest|F3JP|70|2625
+Lotus Orb|R7MN|155|3850
+Aghanim's Shard|W0HE|75|1400
+Aghanim's Blessing|M6PY|95|4200
+Boots of Travel|A2VL|125|2500
+Boots of Travel 2|K7ZD|135|4500
+Wind Waker|H1BN|150|6825
+Arcane Blink|X8QF|21|6800
+Overwhelming Blink|Y0MC|95|6800
+Swift Blink|J6UZ|105|6800
+Nullifier|P3XY|110|4700
+Divine Rapier|C1VK|140|6000
+Moon Shard|E3MF|100|4000
+Cheese|U5DR|90|1000
+Tango|L6WE|85|90
+Healing Salve|Z2NH|160|110
+Clarity|N3RQ|120|50
+Smoke of Deceit|D8CY|70|80
+Observer Ward|V6BG|155|75
+Sentry Ward|B5HX|75|75
+Dust of Appearance|W1ZP|95|80
+Tome of Knowledge|G1KZ|125|150
+Magic Wand|S1XE|21|450
+Etlog|XCas|69|12
+Refregirator|REF|8|123123132

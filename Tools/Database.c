@@ -18,6 +18,10 @@ const char *isOpenDatabaseName = "isOpen.csv";
 const char *numCashiersDatabaseName = "numCashiers.csv";
 const char *transactionsFolderName = "transactions";
 
+/*
+    Constructs the `itemsDatabasePath`, `isOpenDatabasePath`, `numCashiersDatabasePath`, and `transactionsFolderPath`,
+    then initializes `accounts`, `items`, `numCashiers`, and `transactionFolder` databases,
+*/
 void initializeDatabases()
 {
     snprintf(accountsDatabasePath, sizeof(accountsDatabasePath), "%s/%s", databasesPath, accountsDatabaseName);          // Databases/accounts.csv
@@ -33,6 +37,11 @@ void initializeDatabases()
     initializeTransactionsFolder();
 }
 
+/*
+    If accounts.csv doesn't exist, creates one and creates a header and then a default account.
+
+    Default account: `username: admin`, `password: admin`, `identifier: ehyxccqfugqXgM6Q7QXKPChO3iPffF8o`
+*/
 void InitializeAccountsDatabase()
 {
     FILE *file = fopen(accountsDatabasePath, "r");
@@ -41,12 +50,17 @@ void InitializeAccountsDatabase()
         file = fopen(accountsDatabasePath, "w");
 
         enrollAccount("username", "password", "displayName", "status", "identifier");
-        enrollAccount("admin", "admin", "admin", "admin", generateAccountIdentifier());
+        enrollAccount("admin", "admin", "admin", "admin", "ehyxccqfugqXgM6Q7QXKPChO3iPffF8o");
     }
 
     fclose(file);
 }
 
+/*
+    Used to enroll (or append) into the accounts.csv.
+
+    `Format: username|password|displayname|status|identifier`.
+*/
 void enrollAccount(const char *username, const char *password, const char *displayName, const char *status, const char *identifier)
 {
     FILE *accountsDatabase = fopen(accountsDatabasePath, "a");
@@ -60,6 +74,11 @@ void enrollAccount(const char *username, const char *password, const char *displ
     fclose(accountsDatabase);
 }
 
+/*
+    Initializes items.csv.
+
+    If items.csv doesn't exist, creates one and then creates the header.
+*/
 void InitializeItemsDatabase()
 {
 
@@ -74,6 +93,9 @@ void InitializeItemsDatabase()
     fclose(itemsDatabase);
 }
 
+/*
+    Adds an entry to items.csv, if items.csv doesn't exist, creates one and then appends the passed entry.
+*/
 void AddItemToDatabase(const char *itemName, const char *identifier, const long numStocks, const long price)
 {
     FILE *itemsDatabase = fopen(itemsDatabasePath, "a");
@@ -87,6 +109,12 @@ void AddItemToDatabase(const char *itemName, const char *identifier, const long 
     fclose(itemsDatabase);
 }
 
+/*
+    Removes the item with the matching identifier.
+
+    Creates a temp.csv and then appends all the entries from the current `items.csv`
+    except for the matching identifier.
+*/
 void removeItemsDatabaseEntryByIdentifier(const char *identifier)
 {
     const char *tempItemsDatabaseName = "temp.csv";
@@ -125,6 +153,11 @@ void removeItemsDatabaseEntryByIdentifier(const char *identifier)
     free(newItemsDatabasePath);
 }
 
+/*
+    Changes a property of an item from items.csv depending on the passed `operationType` (ItemsEntryOperationType operationType)
+
+
+*/
 void changeItemPropertyByIdentifier(const char *identifier, ItemsEntryOperationType operationType, ...)
 {
     va_list args;
